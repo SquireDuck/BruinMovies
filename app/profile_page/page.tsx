@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRef, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { getCroppedImg } from "./cropImageHelper.js"; // We'll create this function
+import { getCroppedImg } from "./cropImageHelper.js"; /* Helper function for cropping image */
 
 export default function profile() {
     /* State variables for profile here */
@@ -33,42 +33,42 @@ export default function profile() {
     /* State variables for profile information */
     const [name, setName] = useState("uclabruins");
     const [year, setYear] = useState("Freshman");
-    const [interests, setInterests] = useState("");
-    const [major, setMajor] = useState("");
-    const [email, setEmail] = useState("");
+    const [interests, setInterests] = useState("Sci-fic, Fantasy");
+    const [major, setMajor] = useState("Computer Science");
+    const [email, setEmail] = useState("xxx@g.ucla.edu");
     const [bio, setBio] = useState("This is a bio");
-    // const [isEditMode, setIsEditMode] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
 
-    // const handleProfileInfoChange = (field, value) => {
-    //     // Update each field based on its name
-    //     switch (field) {
-    //         case "name":
-    //             setName(value);
-    //             break;
-    //         case "year":
-    //             setYear(value);
-    //             break;
-    //         case "interests":
-    //             setInterests(value);
-    //             break;
-    //         case "major":
-    //             setMajor(value);
-    //             break;
-    //         case "email":
-    //             setEmail(value);
-    //             break;
-    //         case "bio":
-    //             setBio(value);
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // };
+    const handleProfileInfoChange = (field, value) => {
+        // Update each field based on its name
+        switch (field) {
+            case "name":
+                setName(value);
+                break;
+            case "year":
+                setYear(value);
+                break;
+            case "interests":
+                setInterests(value);
+                break;
+            case "major":
+                setMajor(value);
+                break;
+            case "email":
+                setEmail(value);
+                break;
+            case "bio":
+                setBio(value);
+                break;
+            default:
+                break;
+        }
+    };
 
-    // /* Toggle edit mode */
-    // const toggleEditMode = () => {
-    //     setIsEditMode(!isEditMode);
-    // };
+    /* Toggle edit mode */
+    const toggleEditMode = () => {
+        setIsEditMode(!isEditMode);
+    };
 
     /* Function to handle profile picture change */
     const handleProfilePictureChange = (e) => {
@@ -188,31 +188,124 @@ export default function profile() {
                         {/* Profile information */}
                         <div className="flex flex-col w-3/4 p-4 space-y-4">
                             {/* Add additional profile information or components here */}
-                            <h2 className="text-xl font-semibold">Name</h2>
-                            <p className="text-lg">yoyo</p>
-                            <h2 className="text-xl font-semibold">Year</h2>
-                            <p className="text-lg">sophomore</p>
-                            <h2 className="text-xl font-semibold">Interests</h2>
-                            <p className="text-lg">sci-fic movies</p>
+                            <h2 className="text-lg font-semibold">Name</h2>
+                            {isEditMode /* Edit mode */ ? (
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) =>
+                                        handleProfileInfoChange(
+                                            "name",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="text-lg border border-gray-300 rounded p-2"
+                                />
+                            ) : (
+                                /* Default/view mode */
+                                <p className="text-lg">{name}</p>
+                            )}
 
-                            <h2 className="text-xl font-semibold">Major</h2>
-                            <p className="text-lg">Computer Science</p>
-                            <h2 className="text-xl font-semibold">Email</h2>
-                            <p className="text-lg">yoyo_xue@outlook.com</p>
+                            <h2 className="text-lg font-semibold">Year</h2>
+                            {isEditMode /* Edit mode */ ? (
+                                <input
+                                    type="text"
+                                    value={year}
+                                    onChange={(e) =>
+                                        handleProfileInfoChange(
+                                            "year",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="text-lg border border-gray-300 rounded p-2"
+                                />
+                            ) : (
+                                /* Default/view mode */
+                                <p className="text-lg">{year}</p>
+                            )}
 
-                            <h2 className="text-xl font-semibold">Bio</h2>
-                            <p className="text-lg">I am a software engineer.</p>
+                            <h2 className="text-lg font-semibold">Interests</h2>
+                            {isEditMode /* Edit mode */ ? (
+                                <input
+                                    type="text"
+                                    value={interests}
+                                    onChange={(e) =>
+                                        handleProfileInfoChange(
+                                            "interests",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="text-lg border border-gray-300 rounded p-2"
+                                />
+                            ) : (
+                                /* Default/view mode */
+                                <p className="text-lg">{interests}</p>
+                            )}
+
+                            <h2 className="text-lg font-semibold">Major</h2>
+                            {isEditMode /* Edit mode */ ? (
+                                <input
+                                    type="text"
+                                    value={major}
+                                    onChange={(e) =>
+                                        handleProfileInfoChange(
+                                            "major",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="text-lg border border-gray-300 rounded p-2"
+                                />
+                            ) : (
+                                /* Default/view mode */
+                                <p className="text-lg">{major}</p>
+                            )}
+
+                            <h2 className="text-lg font-semibold">Email</h2>
+                            {isEditMode /* Edit mode */ ? (
+                                <input
+                                    type="text"
+                                    value={email}
+                                    onChange={(e) =>
+                                        handleProfileInfoChange(
+                                            "email",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="text-lg border border-gray-300 rounded p-2"
+                                />
+                            ) : (
+                                /* Default/view mode */
+                                <p className="text-lg">{email}</p>
+                            )}
+
+                            <h2 className="text-lg font-semibold">Bio</h2>
+                            {isEditMode /* Edit mode */ ? (
+                                <textarea
+                                    value={bio}
+                                    onChange={(e) =>
+                                        handleProfileInfoChange(
+                                            "bio",
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="text-lg border border-gray-300 rounded p-2"
+                                />
+                            ) : (
+                                /* Default/view mode */
+                                <p className="text-lg">{bio}</p>
+                            )}
 
                             {/* Add spacing*/}
                             <h2 className="text-xl font-semibold"></h2>
                             <p className="text-lg"></p>
 
-                            {/* Edit button */}
+                            {/* Edit / Save button */}
                             <button
                                 className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-8"
+                                onClick={toggleEditMode}
                                 style={{ backgroundColor: "#005587" }}
                             >
-                                Edit Profile
+                                {isEditMode ? "Save Profile" : "Edit Profile"}
                             </button>
 
                             {/*Sign out button*/}
