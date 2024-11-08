@@ -3,15 +3,49 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
-  const handleSignIn = () => {
-    // Logic to make sure username and password are in the system, if so go to gallery
-  }
+  const handleSignIn = async () => {
+    if (!username || !password) {
+      alert("Both username and password are required.");
+      return;
+    }
+
+    try {
+      // Send POST request to your signin API
+      const response = await fetch('/api/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to sign in');
+      }
+
+      // Assuming you get a token or session info back from the server
+      alert('Sign-in successful!');
+      // Redirect the user to the movies gallery page or dashboard
+      router.push('/movies');
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('An unknown error occurred');
+      }
+    }
+  };
+
 
   return (
     <>
