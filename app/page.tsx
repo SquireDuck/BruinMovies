@@ -89,7 +89,7 @@ export default function Home() {
         </div>
       </div>
       <div className="justify-center text-center pt-10">
-        <button className="font-extrabold py-5 px-14 border-2 border-black rounded-lg p-2 bg-gray-400 text-black" onClick={handleSignIn}>Sign in with Google</button>
+        <button className="font-extrabold py-5 px-14 border-2 border-black rounded-lg p-2 bg-gray-400 text-black">Sign in with Google</button>
       </div>
     </>
   );
