@@ -5,7 +5,112 @@ import React from "react";
 import { useState } from "react";
 import Link from "next/link";
 
+import { useRef, useCallback } from "react";
+import Cropper from "react-easy-crop";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { getCroppedImg } from "./cropImageHelper.js"; // We'll create this function
+
 export default function profile() {
+    /* State variables for profile here */
+    const [username, setUsername] = useState("bruins123");
+    const [profilePicture, setProfilePicture] = useState(
+        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+    ); /* Default profile picture */
+    const [isEditing, setIsEditing] = useState(false); /* state for edit mode */
+    const [isNewPicture, setIsNewPicture] =
+        useState(false); /* tracks if new picture is uploaded */
+
+    /* Hidden file input reference */
+    const fileInputRef = React.useRef(null);
+
+    /* State variables for image cropper */
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [showCropper, setShowCropper] = useState(false);
+
+    /* State variables for profile information */
+    const [name, setName] = useState("uclabruins");
+    const [year, setYear] = useState("Freshman");
+    const [interests, setInterests] = useState("");
+    const [major, setMajor] = useState("");
+    const [email, setEmail] = useState("");
+    const [bio, setBio] = useState("This is a bio");
+    // const [isEditMode, setIsEditMode] = useState(false);
+
+    // const handleProfileInfoChange = (field, value) => {
+    //     // Update each field based on its name
+    //     switch (field) {
+    //         case "name":
+    //             setName(value);
+    //             break;
+    //         case "year":
+    //             setYear(value);
+    //             break;
+    //         case "interests":
+    //             setInterests(value);
+    //             break;
+    //         case "major":
+    //             setMajor(value);
+    //             break;
+    //         case "email":
+    //             setEmail(value);
+    //             break;
+    //         case "bio":
+    //             setBio(value);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // };
+
+    // /* Toggle edit mode */
+    // const toggleEditMode = () => {
+    //     setIsEditMode(!isEditMode);
+    // };
+
+    /* Function to handle profile picture change */
+    const handleProfilePictureChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(URL.createObjectURL(file));
+            setShowCropper(true);
+        }
+    };
+
+    /* Cropping, uploading, and saving functions */
+    const handleUploadButtonClick = () => {
+        if (!showCropper) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }, []);
+
+    const handleCropSave = async () => {
+        try {
+            const croppedImage = await getCroppedImg(
+                selectedFile,
+                croppedAreaPixels,
+            );
+            setProfilePicture(
+                croppedImage,
+            ); /* Set cropped image as profile picture */
+            setIsNewPicture(false);
+            setShowCropper(false);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleCropCancel = () => {
+        setShowCropper(false);
+        setSelectedFile(null);
+    };
+
     return (
         <>
             <div className="flex items-center justify-center">
@@ -20,16 +125,61 @@ export default function profile() {
                             <h2 className="text-2xl font-semibold">
                                 Profile Picture
                             </h2>
-                            <img
-                                src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                                alt="profile picture"
+                            <img src={profilePicture} alt="profile picture" />
+
+                            {/* Hidden file input */}
+                            <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png"
+                                onChange={handleProfilePictureChange}
+                                className="hidden"
+                                ref={fileInputRef}
                             />
+
+                            {/* Upload/Save button */}
                             <button
+                                onClick={handleUploadButtonClick}
                                 className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 style={{ backgroundColor: "#005587" }}
                             >
-                                Upload Profile Picture
+                                {isNewPicture
+                                    ? "Save Changes"
+                                    : "Upload Profile Picture"}
                             </button>
+
+                            {/* Cropper */}
+                            {showCropper && (
+                                <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+                                    <div className="relative w-80 h-80 bg-white p-4 rounded shadow-lg z-60">
+                                        <Cropper
+                                            image={selectedFile}
+                                            crop={crop}
+                                            zoom={zoom}
+                                            aspect={1} // 1:1 aspect ratio
+                                            onCropChange={setCrop}
+                                            onZoomChange={setZoom}
+                                            onCropComplete={onCropComplete}
+                                        />
+                                        <div className="absolute top-4 right-4 flex space-x-4">
+                                            {" "}
+                                            {/* Place buttons absolutely within cropper container to ensure that they sit above it */}
+                                            <button
+                                                onClick={handleCropCancel}
+                                                className="text-red-500 z-70"
+                                            >
+                                                <FaTimes size={20} />
+                                            </button>
+                                            <button
+                                                onClick={handleCropSave}
+                                                className="text-green-500 z-70"
+                                            >
+                                                <FaCheck size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <h2 className="text-xl font-semibold">
                                 Username: user123
                             </h2>
