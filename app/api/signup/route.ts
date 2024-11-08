@@ -6,20 +6,16 @@ export async function POST(request: Request) {
     try {
         const { username, email, password } = await request.json();
 
-        // Connect to MongoDB and specify the collection
         const db = await connectToDatabase();
-        const usersCollection = db.collection('users'); // Specify the collection name
+        const usersCollection = db.collection('users'); 
 
-        // Check if user already exists
         const existingUser = await usersCollection.findOne({ email });
         if (existingUser) {
             return NextResponse.json({ message: 'User already exists' }, { status: 400 });
         }
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insert new user into the collection
         await usersCollection.insertOne({
             username,
             email,

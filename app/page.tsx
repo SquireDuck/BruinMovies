@@ -18,7 +18,6 @@ export default function Home() {
     }
 
     try {
-      // Send POST request to your signin API
       const response = await fetch('/api/signin', {
         method: 'POST',
         headers: {
@@ -33,9 +32,7 @@ export default function Home() {
         throw new Error(data.message || 'Failed to sign in');
       }
 
-      // Assuming you get a token or session info back from the server
       alert('Sign-in successful!');
-      // Redirect the user to the movies gallery page or dashboard
       router.push('/movies');
     } catch (error) {
       if (error instanceof Error) {

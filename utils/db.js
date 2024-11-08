@@ -10,8 +10,7 @@ if (!process.env.MONGODB_URI) {
   throw new Error("Please add your Mongo URI to .env.local");
 }
 
-// Specify your database name here
-const databaseName = 'bruinmovies'; // Name of your database
+const databaseName = 'bruinmovies';
 
 if (process.env.NODE_ENV === "development") {
   if (!global._mongoClientPromise) {
@@ -26,5 +25,5 @@ if (process.env.NODE_ENV === "development") {
 
 export async function connectToDatabase() {
   const client = await clientPromise;
-  return client.db(databaseName); // Return the specified database
+  return client.db(databaseName); 
 }
