@@ -32,7 +32,7 @@ export default function Home() {
         throw new Error(data.message || 'Failed to sign in');
       }
 
-      alert('Sign-in successful!');
+      //alert('Sign-in successful!');
       router.push('/movies');
     } catch (error) {
       if (error instanceof Error) {
