@@ -1,6 +1,6 @@
 // pages/_app.tsx
 
-import '../styles/globals.css'
+import '../_styles/globals.css'
 import type { AppProps } from 'next/app'
 import { Poppins, Roboto } from 'next/font/google'
 

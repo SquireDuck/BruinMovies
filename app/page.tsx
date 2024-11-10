@@ -1,140 +1,148 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-interface Movie {
-  title: string;
-  rating: string;
-  showtimes: string;
-  imdbId: string;
-}
-
-interface Theater {
-  name: string;
-  address: string;
-  movies: Movie[];
-}
-
-const Home: React.FC = () => {
-  const [theaters, setTheaters] = useState<Theater[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+const AppPage: React.FC = () => {
+  const [isRegister, setIsRegister] = useState(false); // Toggles between Sign-Up and Sign-In
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTheaters = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:5000/api/theaters");
-        setTheaters(response.data.theaters);
-      } catch (err: any) {
-        console.error("Error fetching theaters:", err);
-        setError(err.response?.data?.message || "Failed to load theater data.");
-      } finally {
-        setLoading(false);
+  const router = useRouter();
+
+  const handleRegister = async () => {
+    if (!username || !email || !password) {
+      setError("All fields are required.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to register.");
       }
-    };
 
-    fetchTheaters();
-  }, []);
+      alert("User registered successfully!");
+      setIsRegister(false); // Switch to Sign-In mode after registration
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
+  };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-black">
-        <div className="text-white text-xl animate-pulse">Loading...</div>
-      </div>
-    );
-  }
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      setError("Email and password are required.");
+      return;
+    }
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-black text-red-500">
-        {error}
-      </div>
-    );
-  }
+    try {
+      const response = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-  const formatShowtimes = (showtimes: string): string => {
-    return showtimes === "No showtimes available on IMDb." || showtimes === "N/A"
-      ? "No showtimes listed"
-      : showtimes;
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to sign in.");
+      }
+
+      alert(`Welcome back, ${data.username}!`);
+      router.push("/movie-page"); // Redirect to the movie page
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
-      {/* Hero Section */}
-      <header className="relative bg-black py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold text-yellow-400 mb-4 animate-fade-in">
-            Discover Movies Near UCLA 🎥
-          </h1>
-          <p className="text-gray-300 text-lg">
-            Explore theaters and movies with a Bruin touch!
-          </p>
-        </div>
-        <div className="absolute inset-0 opacity-10 bg-gradient-to-r from-yellow-400 via-blue-500 to-black pointer-events-none"></div>
-      </header>
-
-      {/* Theaters and Movies */}
-      <main className="container mx-auto px-6 py-12">
-        {theaters.map((theater) => (
-          <div key={theater.name} className="mb-12">
-            <h2 className="text-3xl font-bold text-yellow-400 mb-4">
-              {theater.name}
-            </h2>
-            <p className="text-gray-400 mb-6">{theater.address}</p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {theater.movies.map((movie) => (
-                <li
-                  key={movie.imdbId}
-                  className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-transform"
-                >
-                  <Link href={`/${movie.imdbId}`}>
-                    <div className="p-6">
-                      <h3 className="text-2xl font-bold text-white mb-4">
-                        {movie.title}
-                      </h3>
-                      <div className="text-gray-300 mb-4">
-                        <p>
-                          <strong>Rating:</strong>{" "}
-                          <span className="text-yellow-400">
-                            {movie.rating === "N/A" ? "Not Rated" : movie.rating}
-                          </span>
-                        </p>
-                        <p>
-                          <strong>User Ratings:</strong>{" "}
-                          <span className="text-gray-400">
-                            {movie.rating !== " N/A" ? "(2,111 user ratings)" : "N/A"}
-                          </span>
-                        </p>
-                        <p>
-                          <strong>Rank:</strong>{" "}
-                          <span className="text-gray-400">
-                            {movie.rating !== "N/A" ? "> 1000" : "N/A"}
-                          </span>
-                        </p>
-                      </div>
-                      <p className="text-gray-400">
-                        <strong>Showtimes:</strong> {formatShowtimes(movie.showtimes)}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white flex items-center justify-center">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 className="text-3xl font-bold text-yellow-400 mb-6 text-center">
+          {isRegister ? "Register" : "Sign In"}
+        </h1>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            isRegister ? handleRegister() : handleSignIn();
+          }}
+        >
+          {isRegister && (
+            <div className="mb-4">
+              <label htmlFor="username" className="block text-gray-300 mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+          )}
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-300 mb-2">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Enter your email"
+              required
+            />
           </div>
-        ))}
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-black py-6 text-center">
-        <p className="text-gray-400">
-          &copy; {new Date().getFullYear()} UCLA Movie Explorer. All rights
-          reserved.
+          <div className="mb-6">
+            <label htmlFor="password" className="block text-gray-300 mb-2">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition"
+          >
+            {isRegister ? "Register" : "Sign In"}
+          </button>
+        </form>
+        <p className="text-center text-gray-300 mt-4">
+          {isRegister
+            ? "Already have an account?"
+            : "Don't have an account yet?"}{" "}
+          <span
+            className="text-yellow-400 cursor-pointer"
+            onClick={() => {
+              setIsRegister(!isRegister);
+              setError(null); // Clear error on toggle
+            }}
+          >
+            {isRegister ? "Sign In" : "Register"}
+          </span>
         </p>
-      </footer>
+      </div>
     </div>
   );
 };
 
-export default Home;
+export default AppPage;
