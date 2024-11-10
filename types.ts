@@ -3,7 +3,8 @@ export interface Movie {
     title: string;
     year: number | string;
     rating: number | null;
-    poster?: string; // Optional field if you plan to include poster URLs
+    poster?: string; 
+    imdbId: string; 
   }
   
   export interface WatchlistResponse {
