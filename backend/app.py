@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
+import re  # Import regex for text parsing
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -51,11 +52,16 @@ def get_theaters():
                 # Extract additional details
                 rating = movie_item.find("span", class_="rating_txt")
                 rating_text = rating.get_text(strip=True) if rating else "N/A"
+
+                # Extract numeric rating if available
+                numeric_rating = re.search(r"(\d\.\d)/10", rating_text)
+                clean_rating = numeric_rating.group(1) + "/10" if numeric_rating else "N/A"
+
                 showtimes = movie_item.find("div", class_="showtimes").get_text(" ", strip=True)
 
                 movies.append({
                     "title": title,
-                    "rating": rating_text,
+                    "rating": clean_rating,
                     "showtimes": showtimes,
                     "imdbId": imdb_id
                 })
@@ -96,7 +102,11 @@ def get_movie_details(imdb_id):
 
         # Rating
         rating_tag = soup.find("div", {"data-testid": "hero-rating-bar__aggregate-rating__score"})
-        rating = rating_tag.get_text(strip=True) if rating_tag else "N/A"
+        rating_text = rating_tag.get_text(strip=True) if rating_tag else "N/A"
+
+        # Extract numeric rating if available
+        numeric_rating = re.search(r"(\d\.\d)/10", rating_text)
+        clean_rating = numeric_rating.group(1) + "/10" if numeric_rating else "N/A"
 
         # Description
         description_tag = soup.find("span", {"data-testid": "plot-xl"})
@@ -111,7 +121,7 @@ def get_movie_details(imdb_id):
 
         return jsonify({
             "title": title,
-            "rating": rating,
+            "rating": clean_rating,
             "description": description,
             "showtimes": showtimes,
             "image": image

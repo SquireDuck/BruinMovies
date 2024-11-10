@@ -21,6 +21,7 @@ const MoviePage: React.FC = () => {
   const [theaters, setTheaters] = useState<Theater[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchTheaters = async () => {
@@ -54,14 +55,19 @@ const MoviePage: React.FC = () => {
     );
   }
 
-  const formatShowtimes = (showtimes: string): string => {
-    return showtimes === "No showtimes available on IMDb." || showtimes === "N/A"
-      ? "No showtimes listed"
-      : showtimes;
+  const filteredMovies = () => {
+    if (!searchQuery) return theaters;
+    return theaters.map((theater) => ({
+      ...theater,
+      movies: theater.movies.filter((movie) =>
+        movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    }));
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
+      {/* Header Section */}
       <header className="relative bg-black py-16">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-5xl font-bold text-yellow-400 mb-4">
@@ -74,44 +80,61 @@ const MoviePage: React.FC = () => {
         <div className="absolute inset-0 opacity-10 bg-gradient-to-r from-yellow-400 via-blue-500 to-black pointer-events-none"></div>
       </header>
 
+      {/* Search Bar */}
+      <div className="container mx-auto px-6 py-4">
+        <input
+          type="text"
+          placeholder="Search movies..."
+          className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      {/* Main Content */}
       <main className="container mx-auto px-6 py-12">
-        {theaters.map((theater) => (
-          <div key={theater.name} className="mb-12">
-            <h2 className="text-3xl font-bold text-yellow-400 mb-4">
-              {theater.name}
-            </h2>
-            <p className="text-gray-400 mb-6">{theater.address}</p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {theater.movies.map((movie) => (
-                <li
-                  key={movie.imdbId}
-                  className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-transform"
-                >
-                  <Link href={`/${movie.imdbId}`}>
-                    <div className="p-6">
-                      <h3 className="text-2xl font-bold text-white mb-4">
-                        {movie.title}
-                      </h3>
-                      <div className="text-gray-300 mb-4">
-                        <p>
-                          <strong>Rating:</strong>{" "}
+        {filteredMovies().map((theater) =>
+          theater.movies.length > 0 ? (
+            <div key={theater.name} className="mb-12">
+              <h2 className="text-3xl font-bold text-yellow-400 mb-4">
+                {theater.name}
+              </h2>
+              <p className="text-gray-400 mb-6">{theater.address}</p>
+              <div className="overflow-x-auto whitespace-nowrap space-x-4 flex px-2">
+                {theater.movies.map((movie) => (
+                  <div
+                    key={movie.imdbId}
+                    className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg shadow-md transform hover:scale-105 transition-transform w-64 flex-none p-4"
+                  >
+                    <Link href={`/${movie.imdbId}`}>
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-4">
+                          {movie.title}
+                        </h3>
+                        <p className="text-gray-300 flex items-center mb-4">
+                          <span className="text-yellow-400 mr-2">⭐</span>
                           <span className="text-yellow-400">
                             {movie.rating === "N/A" ? "Not Rated" : movie.rating}
                           </span>
                         </p>
-                        <p>
-                          <strong>Showtimes:</strong> {formatShowtimes(movie.showtimes)}
+                        <p className="text-gray-400">
+                          <strong>Showtimes:</strong>{" "}
+                          {movie.showtimes === "No showtimes available on IMDb." ||
+                          movie.showtimes === "N/A"
+                            ? "No showtimes listed"
+                            : movie.showtimes}
                         </p>
                       </div>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null
+        )}
       </main>
 
+      {/* Footer */}
       <footer className="bg-black py-6 text-center">
         <p className="text-gray-400">
           &copy; {new Date().getFullYear()} UCLA Movie Explorer. All rights
