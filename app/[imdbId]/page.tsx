@@ -9,6 +9,7 @@ interface MovieDetails {
   rating: string;
   description: string;
   showtimes: string;
+  image: string;
 }
 
 const MovieDetailsPage: React.FC = () => {
@@ -44,79 +45,95 @@ const MovieDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900">
+      <div className="flex justify-center items-center min-h-screen bg-black">
         <Spinner />
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="text-center text-red-500">{error}</div>;
   }
 
   if (!movie) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-gray-400">
-        Movie not found.
-      </div>
-    );
+    return <div className="text-center text-gray-400">Movie not found.</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header Section */}
-      <header className="bg-gray-800 py-6">
-        <div className="container mx-auto px-6">
-          <h1 className="text-4xl font-bold text-yellow-400">{movie.title}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
+      {/* Header */}
+      <header className="relative bg-black py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-5xl font-bold text-yellow-400 mb-4">{movie.title}</h1>
+          <p className="text-gray-300 text-lg">
+            An immersive experience brought to you with a Bruin touch.
+          </p>
         </div>
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-r from-yellow-400 via-blue-500 to-black pointer-events-none"></div>
       </header>
 
-      {/* Main Content Section */}
+      {/* Movie Details */}
       <main className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* Movie Details */}
-          <div>
-            <h2 className="text-2xl font-semibold mb-4 text-yellow-400">Details</h2>
-            <p className="text-gray-400 mb-4">
-              <span className="font-bold text-white">Rating:</span>{" "}
-              <span className="text-yellow-500">{movie.rating !== "N/A" ? movie.rating : "Not Rated"}</span>
-            </p>
-            <p className="text-gray-400 mb-4">
-              <span className="font-bold text-white">Description:</span>{" "}
-              {movie.description || "No description available."}
-            </p>
-            <p className="text-gray-400">
-              <span className="font-bold text-white">Showtimes:</span>{" "}
-              {movie.showtimes !== "No showtimes available on IMDb." && movie.showtimes !== "N/A"
-                ? movie.showtimes
-                : "Showtimes not available"}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* Movie Poster */}
+          {movie.image && (
+            <div className="flex justify-center">
+              <img
+                src={movie.image}
+                alt={`${movie.title} Poster`}
+                className="rounded-lg shadow-lg w-2/3 lg:w-full"
+              />
+            </div>
+          )}
 
-          {/* Decorative Placeholder (e.g., Poster or Related Content) */}
-          <div className="bg-gray-800 rounded-lg shadow-lg flex items-center justify-center p-8">
-            <p className="text-gray-500">Poster or related content can go here.</p>
+          {/* Movie Information */}
+          <div className="lg:col-span-2">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+              <h2 className="text-3xl font-bold mb-4">{movie.title}</h2>
+              <p className="text-yellow-500 text-xl mb-4">
+                Rating: {movie.rating === "N/A" ? "Not Rated" : movie.rating}
+              </p>
+              <p className="text-gray-300 text-lg mb-6 leading-relaxed">
+                <strong>Description:</strong> {movie.description}
+              </p>
+              <p className="text-gray-400 text-lg">
+                <strong>Showtimes:</strong>{" "}
+                {movie.showtimes === "No showtimes available on IMDb."
+                  ? "Showtimes not available"
+                  : movie.showtimes}
+              </p>
+            </div>
+
+            {/* Comments Section */}
+            <div className="mt-12">
+              <h3 className="text-2xl font-bold mb-4">Comments:</h3>
+              <div className="bg-gray-800 p-6 rounded-lg shadow-lg overflow-y-auto h-48">
+                <p className="text-gray-400 mb-4">Andy Peng: Great movie!</p>
+                <p className="text-gray-400 mb-4">Andy Peng: Loved the plot twist!</p>
+                <p className="text-gray-400 mb-4">
+                  Andy Peng: Highly recommend watching with friends.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 py-6 text-center">
-        <p>&copy; {new Date().getFullYear()} Movie App. All rights reserved.</p>
+      <footer className="bg-black py-6 text-center">
+        <p className="text-gray-400">
+          &copy; {new Date().getFullYear()} UCLA Bruin Watch. All rights reserved.
+        </p>
       </footer>
     </div>
   );
 };
 
-// Spinner Component (add this within the same file or import it)
+// Spinner Component (for loading state)
 const Spinner: React.FC = () => (
   <div className="flex justify-center items-center">
     <svg
-      className="animate-spin h-8 w-8 text-yellow-400"
+      className="animate-spin h-8 w-8 text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"

@@ -39,7 +39,7 @@ def get_theaters():
             for movie_item in movie_items:
                 # Extract movie title
                 title = movie_item.find("span", itemprop="name").get_text(strip=True)
-                
+
                 # Extract IMDb ID from the link
                 link_tag = movie_item.find("a", href=True)
                 imdb_id = None
@@ -94,17 +94,17 @@ def get_movie_details(imdb_id):
         title_tag = soup.find("h1")
         title = title_tag.get_text(strip=True) if title_tag else "Title not found"
 
-        # Updated logic to extract IMDb rating
-        rating = "N/A"
-        rating_span = soup.find("div", {"data-testid": "hero-rating-bar__aggregate-rating__score"})
-        if rating_span:
-            rating_value = rating_span.find("span", class_="sc-d541859f-1 imUuxf")
-            if rating_value:
-                rating = rating_value.get_text(strip=True)
+        # Rating
+        rating_tag = soup.find("div", {"data-testid": "hero-rating-bar__aggregate-rating__score"})
+        rating = rating_tag.get_text(strip=True) if rating_tag else "N/A"
 
         # Description
         description_tag = soup.find("span", {"data-testid": "plot-xl"})
         description = description_tag.get_text(strip=True) if description_tag else "No description available."
+
+        # Image
+        image_tag = soup.find("img", {"class": "ipc-image"})
+        image = image_tag['src'] if image_tag else None
 
         # Showtimes (static text as showtimes are not directly available on the movie page)
         showtimes = "No showtimes available on IMDb."
@@ -113,7 +113,8 @@ def get_movie_details(imdb_id):
             "title": title,
             "rating": rating,
             "description": description,
-            "showtimes": showtimes
+            "showtimes": showtimes,
+            "image": image
         })
 
     except requests.exceptions.RequestException as e:

@@ -39,48 +39,84 @@ const Home: React.FC = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-white">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-black">
+        <div className="text-white text-xl animate-pulse">Loading...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-black text-red-500">
+        {error}
+      </div>
+    );
   }
 
-  // Helper function to format rating
-  const formatRating = (rating: string): string => {
-    return rating === "N/A" ? "Not Rated" : rating;
-  };
-
-  // Helper function to format showtimes
   const formatShowtimes = (showtimes: string): string => {
     return showtimes === "No showtimes available on IMDb." || showtimes === "N/A"
-      ? "Showtimes not available"
+      ? "No showtimes listed"
       : showtimes;
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <header className="bg-gray-800 py-6">
-        <div className="container mx-auto px-6">
-          <h1 className="text-4xl font-bold">Movie Theaters</h1>
+    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
+      {/* Hero Section */}
+      <header className="relative bg-black py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-5xl font-bold text-yellow-400 mb-4 animate-fade-in">
+            Discover Movies Near UCLA 🎥
+          </h1>
+          <p className="text-gray-300 text-lg">
+            Explore theaters and movies with a Bruin touch!
+          </p>
         </div>
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-r from-yellow-400 via-blue-500 to-black pointer-events-none"></div>
       </header>
-      <main className="container mx-auto px-6 py-8">
+
+      {/* Theaters and Movies */}
+      <main className="container mx-auto px-6 py-12">
         {theaters.map((theater) => (
-          <div key={theater.name} className="mb-8">
-            <h2 className="text-2xl font-bold mb-2">{theater.name}</h2>
-            <p className="text-gray-400 mb-4">{theater.address}</p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div key={theater.name} className="mb-12">
+            <h2 className="text-3xl font-bold text-yellow-400 mb-4">
+              {theater.name}
+            </h2>
+            <p className="text-gray-400 mb-6">{theater.address}</p>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {theater.movies.map((movie) => (
                 <li
                   key={movie.imdbId}
-                  className="bg-gray-800 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-transform"
+                  className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-transform"
                 >
                   <Link href={`/${movie.imdbId}`}>
-                    <div className="p-4 cursor-pointer">
-                      <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
-                      <p className="text-gray-400 mb-1">Rating: {formatRating(movie.rating)}</p>
-                      <p className="text-gray-400">Showtimes: {formatShowtimes(movie.showtimes)}</p>
+                    <div className="p-6">
+                      <h3 className="text-2xl font-bold text-white mb-4">
+                        {movie.title}
+                      </h3>
+                      <div className="text-gray-300 mb-4">
+                        <p>
+                          <strong>Rating:</strong>{" "}
+                          <span className="text-yellow-400">
+                            {movie.rating === "N/A" ? "Not Rated" : movie.rating}
+                          </span>
+                        </p>
+                        <p>
+                          <strong>User Ratings:</strong>{" "}
+                          <span className="text-gray-400">
+                            {movie.rating !== " N/A" ? "(2,111 user ratings)" : "N/A"}
+                          </span>
+                        </p>
+                        <p>
+                          <strong>Rank:</strong>{" "}
+                          <span className="text-gray-400">
+                            {movie.rating !== "N/A" ? "> 1000" : "N/A"}
+                          </span>
+                        </p>
+                      </div>
+                      <p className="text-gray-400">
+                        <strong>Showtimes:</strong> {formatShowtimes(movie.showtimes)}
+                      </p>
                     </div>
                   </Link>
                 </li>
@@ -89,8 +125,13 @@ const Home: React.FC = () => {
           </div>
         ))}
       </main>
-      <footer className="bg-gray-800 py-6 text-center">
-        <p>&copy; {new Date().getFullYear()} Movie App. All rights reserved.</p>
+
+      {/* Footer */}
+      <footer className="bg-black py-6 text-center">
+        <p className="text-gray-400">
+          &copy; {new Date().getFullYear()} UCLA Movie Explorer. All rights
+          reserved.
+        </p>
       </footer>
     </div>
   );
