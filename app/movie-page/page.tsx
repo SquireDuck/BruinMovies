@@ -9,6 +9,7 @@ interface Movie {
   rating: string;
   showtimes: string;
   imdbId: string;
+  image: string; // Include image URL
 }
 
 interface Theater {
@@ -108,6 +109,13 @@ const MoviePage: React.FC = () => {
                   >
                     <Link href={`/${movie.imdbId}`}>
                       <div>
+                        {movie.image && (
+                          <img
+                            src={movie.image}
+                            alt={movie.title}
+                            className="w-full h-48 object-cover rounded-lg mb-4"
+                          />
+                        )}
                         <h3 className="text-xl font-bold text-white mb-4">
                           {movie.title}
                         </h3>
