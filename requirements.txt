@@ -1,0 +1,1 @@
+pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
