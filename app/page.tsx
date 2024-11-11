@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const AppPage: React.FC = () => {
-  const [isRegister, setIsRegister] = useState(false); // Toggles between Sign-Up and Sign-In
+  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [requiresOTP, setRequiresOTP] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const router = useRouter();
 
@@ -31,7 +33,7 @@ const AppPage: React.FC = () => {
       }
 
       alert("User registered successfully!");
-      setIsRegister(false); // Switch to Sign-In mode after registration
+      setIsRegister(false);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     }
@@ -55,8 +57,39 @@ const AppPage: React.FC = () => {
         throw new Error(data.message || "Failed to sign in.");
       }
 
+      if (data.requiresOTP) {
+        setRequiresOTP(true);
+        setError(null);
+        alert("Please check your email for the verification code.");
+      } else {
+        alert(`Welcome back, ${data.username}!`);
+        router.push("/movie-page");
+      }
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
+  };
+
+  const handleOTPVerification = async () => {
+    if (!otp) {
+      setError("Verification code is required.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to verify OTP.");
+      }
+
       alert(`Welcome back, ${data.username}!`);
-      router.push("/movie-page"); // Redirect to the movie page
+      router.push("/movie-page");
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     }
@@ -64,30 +97,23 @@ const AppPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
-      {/* Navigation Bar */}
       <nav className="bg-gray-900 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <img
             src="https://cdn.discordapp.com/attachments/1247815816167161879/1305360167604326411/BRUIN_2.png?ex=6732bee4&is=67316d64&hm=f0f92a29b927aef9974d1b63c65417b4e4b7b8264644d0664c2a2435df1915d6&"
             alt="Bruin Movies Logo"
-            className="w-64 h-64 object-contain" // Increased width and height
+            className="w-64 h-64 object-contain"
           />
         </div>
       </nav>
 
-      {/* Main Content */}
       <div className="flex flex-col items-center justify-center px-4 md:px-0 py-8">
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
           <h1 className="text-3xl font-bold text-yellow-400 mb-6 text-center">
-            {isRegister ? "Register" : "Sign In"}
+            {isRegister ? "Register" : requiresOTP ? "Verify OTP" : "Sign In"}
           </h1>
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              isRegister ? handleRegister() : handleSignIn();
-            }}
-          >
+          <form onSubmit={(e) => e.preventDefault()}>
             {isRegister && (
               <div className="mb-4">
                 <label htmlFor="username" className="block text-gray-300 mb-2">
@@ -104,59 +130,90 @@ const AppPage: React.FC = () => {
                 />
               </div>
             )}
-            <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-              <div className="mb-6">
-                <label htmlFor="password" className="block text-gray-300 mb-2">
-                  Password
+            {!requiresOTP && (
+              <>
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="password" className="block text-gray-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+              </>
+            )}
+            {requiresOTP && (
+              <div className="mb-4">
+                <label htmlFor="otp" className="block text-gray-300 mb-2">
+                  Verification Code
                 </label>
                 <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  id="otp"
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  placeholder="Enter your password"
+                  placeholder="Enter verification code"
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition"
-              >
-                {isRegister ? "Register" : "Sign In"}
-              </button>
-            </form>
+            )}
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition"
+              onClick={() => {
+                if (isRegister) {
+                  handleRegister();
+                } else if (requiresOTP) {
+                  handleOTPVerification();
+                } else {
+                  handleSignIn();
+                }
+              }}
+            >
+              {isRegister ? "Register" : requiresOTP ? "Verify" : "Sign In"}
+            </button>
+          </form>
+          {!requiresOTP && (
             <p className="text-center text-gray-300 mt-4">
-              {isRegister
-                ? "Already have an account?"
-                : "Don't have an account yet?"}{" "}
+              {isRegister ? "Already have an account?" : "Don't have an account yet?"}{" "}
               <span
                 className="text-yellow-400 cursor-pointer"
                 onClick={() => {
                   setIsRegister(!isRegister);
-                  setError(null); // Clear error on toggle
+                  setError(null);
+                  setRequiresOTP(false);
+                  setOtp("");
                 }}
               >
                 {isRegister ? "Sign In" : "Register"}
               </span>
             </p>
-          </div>
+          )}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
 export default AppPage;

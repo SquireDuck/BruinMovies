@@ -1,1 +1,10 @@
+npm install python
+npm install @types/nodemailer
+python3 -m venv myenv
+source myenv/bin/activate
+npm install nodemailer mongodb dotenv
+
+
 pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
+
+npm install crypto
