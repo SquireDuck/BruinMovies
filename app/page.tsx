@@ -65,20 +65,19 @@ const AppPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
       {/* Navigation Bar */}
-      <nav className="bg-gray-900 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <nav className="bg-gray-900 px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
           <img
-            src="https://cdn.discordapp.com/attachments/1247815816167161879/1305355150671609957/logo.png?ex=6732ba38&is=673168b8&hm=bdf58ba2b9b33cbb3e27c3106bf7f23d363686a6df97a416dd61711e2768c290&"
+            src="https://cdn.discordapp.com/attachments/1247815816167161879/1305360167604326411/BRUIN_2.png?ex=6732bee4&is=67316d64&hm=f0f92a29b927aef9974d1b63c65417b4e4b7b8264644d0664c2a2435df1915d6&"
             alt="Bruin Movies Logo"
-            className="w-23 h-23 object-contain" // Increased width and height
+            className="w-64 h-64 object-contain" // Increased width and height
           />
-          <h1 className="text-yellow-400 text-xl font-bold">Bruin Movies</h1>
         </div>
       </nav>
 
       {/* Main Content */}
-      <div className="flex flex-col items-center justify-center px-4 md:px-0 py-12">
-        <div className="bg-gray-800 p-8 rounded-lg shadow-lg max-w-md w-full">
+      <div className="flex flex-col items-center justify-center px-4 md:px-0 py-8">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
           <h1 className="text-3xl font-bold text-yellow-400 mb-6 text-center">
             {isRegister ? "Register" : "Sign In"}
           </h1>
@@ -115,49 +114,49 @@ const AppPage: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label htmlFor="password" className="block text-gray-300 mb-2">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition"
-            >
-              {isRegister ? "Register" : "Sign In"}
-            </button>
-          </form>
-          <p className="text-center text-gray-300 mt-4">
-            {isRegister
-              ? "Already have an account?"
-              : "Don't have an account yet?"}{" "}
-            <span
-              className="text-yellow-400 cursor-pointer"
-              onClick={() => {
-                setIsRegister(!isRegister);
-                setError(null); // Clear error on toggle
-              }}
-            >
-              {isRegister ? "Sign In" : "Register"}
-            </span>
-          </p>
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="password" className="block text-gray-300 mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition"
+              >
+                {isRegister ? "Register" : "Sign In"}
+              </button>
+            </form>
+            <p className="text-center text-gray-300 mt-4">
+              {isRegister
+                ? "Already have an account?"
+                : "Don't have an account yet?"}{" "}
+              <span
+                className="text-yellow-400 cursor-pointer"
+                onClick={() => {
+                  setIsRegister(!isRegister);
+                  setError(null); // Clear error on toggle
+                }}
+              >
+                {isRegister ? "Sign In" : "Register"}
+              </span>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default AppPage;

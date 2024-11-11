@@ -49,6 +49,10 @@ def get_theaters():
                     if "/title/" in href:
                         imdb_id = href.split("/title/")[1].split("/")[0]  # Extract the ID (e.g., tt0047313)
 
+                # Extract movie image
+                image_tag = movie_item.find("img")
+                image_url = image_tag['src'] if image_tag else None
+
                 # Extract additional details
                 rating = movie_item.find("span", class_="rating_txt")
                 rating_text = rating.get_text(strip=True) if rating else "N/A"
@@ -63,7 +67,8 @@ def get_theaters():
                     "title": title,
                     "rating": clean_rating,
                     "showtimes": showtimes,
-                    "imdbId": imdb_id
+                    "imdbId": imdb_id,
+                    "image": image_url  # Include the movie image URL
                 })
 
             theaters.append({
@@ -81,6 +86,7 @@ def get_theaters():
         # Handle network errors
         print(f"Request failed: {e}")
         return jsonify({"error": "Failed to fetch data from IMDb"}), 500
+
 
 
 @app.route('/api/movie/<imdb_id>', methods=['GET'])
