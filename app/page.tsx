@@ -100,7 +100,7 @@ const AppPage: React.FC = () => {
       <nav className="bg-gray-900 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <img
-            src="https://cdn.discordapp.com/attachments/1247815816167161879/1305360167604326411/BRUIN_2.png?ex=6732bee4&is=67316d64&hm=f0f92a29b927aef9974d1b63c65417b4e4b7b8264644d0664c2a2435df1915d6&"
+            src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
             alt="Bruin Movies Logo"
             className="w-64 h-64 object-contain"
           />

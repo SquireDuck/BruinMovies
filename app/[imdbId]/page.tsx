@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
+import { FaStar, FaClock, FaTicketAlt, FaArrowLeft, FaCommentAlt } from 'react-icons/fa';
 
 interface MovieDetails {
   title: string;
@@ -10,11 +11,13 @@ interface MovieDetails {
   description: string;
   showtimes: string;
   image: string;
+  genres: string[]; // Added genres
 }
 
 const MovieDetailsPage: React.FC = () => {
   const params = useParams() as { imdbId: string };
   const { imdbId } = params;
+  const router = useRouter();
 
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,114 +48,124 @@ const MovieDetailsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-black">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-black to-blue-900">
         <Spinner />
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-center text-red-500">{error}</div>;
+    return <div className="text-center text-red-500 min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-blue-900">{error}</div>;
   }
 
   if (!movie) {
-    return <div className="text-center text-gray-400">Movie not found.</div>;
+    return <div className="text-center text-gray-400 min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-blue-900">Movie not found.</div>;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
-      {/* Header */}
-      <header className="relative bg-black py-16">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold text-yellow-400 mb-4">{movie.title}</h1>
-          <p className="text-gray-300 text-lg">
-            An immersive experience brought to you with a Bruin touch.
-          </p>
+      {/* Enhanced Header */}
+      <header className="relative bg-black py-8">
+        <div className="container mx-auto px-6">
+          <button 
+            onClick={() => router.back()}
+            className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition duration-300"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Movies
+          </button>
         </div>
-        <div className="absolute inset-0 opacity-10 bg-gradient-to-r from-yellow-400 via-blue-500 to-black pointer-events-none"></div>
       </header>
+
+      {/* Movie Hero Section */}
+      <section className="relative py-20">
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: `url(${movie.image})`}}></div>
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row items-center">
+            <img
+              src={movie.image}
+              alt={`${movie.title} Poster`}
+              className="rounded-lg shadow-2xl mb-8 md:mb-0 md:mr-12 w-64 h-96 object-cover"
+            />
+            <div className="text-center md:text-left">
+              <h1 className="text-5xl font-bold text-yellow-400 mb-4">{movie.title}</h1>
+              <div className="flex items-center justify-center md:justify-start mb-4">
+                <FaStar className="text-yellow-400 mr-2" />
+                <span className="text-2xl">{movie.rating === "N/A" ? "Not Rated" : movie.rating}</span>
+              </div>
+              <button className="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full hover:bg-yellow-300 transition duration-300 flex items-center">
+                <FaTicketAlt className="mr-2" />
+                Get Tickets
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Movie Details */}
       <main className="container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Movie Poster */}
-          {movie.image && (
-            <div className="flex justify-center">
-              <img
-                src={movie.image}
-                alt={`${movie.title} Poster`}
-                className="rounded-lg shadow-lg w-2/3 lg:w-full"
-              />
+        <div className="bg-gray-800 p-8 rounded-lg shadow-2xl hover:shadow-yellow-400/20 transition duration-300">
+          <h2 className="text-3xl font-bold mb-6 text-yellow-400">About the Movie</h2>
+          
+          {/* Genres Section */}
+          {movie.genres && movie.genres.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-yellow-400 mb-2">Genres</h3>
+              <div className="flex flex-wrap gap-2">
+                {movie.genres.map((genre, index) => (
+                  <span key={index} className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-semibold">
+                    {genre}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* Movie Information */}
-          <div className="lg:col-span-2">
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-              <h2 className="text-3xl font-bold mb-4">{movie.title}</h2>
-              <p className="text-yellow-500 text-xl mb-4">
-                Rating: {movie.rating === "N/A" ? "Not Rated" : movie.rating}
-              </p>
-              <p className="text-gray-300 text-lg mb-6 leading-relaxed">
-                <strong>Description:</strong> {movie.description}
-              </p>
-              <p className="text-gray-400 text-lg">
-                <strong>Showtimes:</strong>{" "}
-                {movie.showtimes === "No showtimes available on IMDb."
-                  ? "Showtimes not available"
-                  : movie.showtimes}
-              </p>
-            </div>
+          <p className="text-gray-300 text-lg mb-8 leading-relaxed">{movie.description}</p>
+          <div className="flex items-center text-gray-400 text-lg">
+            <FaClock className="mr-2 text-yellow-400" />
+            <strong className="text-yellow-400 mr-2">Showtimes:</strong>
+            <span>{movie.showtimes === "No showtimes available on IMDb." ? "Showtimes not available" : movie.showtimes}</span>
+          </div>
+        </div>
 
-            {/* Comments Section */}
-            <div className="mt-12">
-              <h3 className="text-2xl font-bold mb-4">Comments:</h3>
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg overflow-y-auto h-48">
-                <p className="text-gray-400 mb-4">Andy Peng: Great movie!</p>
-                <p className="text-gray-400 mb-4">Andy Peng: Loved the plot twist!</p>
-                <p className="text-gray-400 mb-4">
-                  Andy Peng: Highly recommend watching with friends.
-                </p>
+        {/* Comments Section */}
+        <div className="mt-16">
+          <h3 className="text-3xl font-bold mb-8 text-yellow-400 flex items-center">
+            <FaCommentAlt className="mr-4" />
+            Student Reviews
+          </h3>
+          <div className="bg-gray-800 p-8 rounded-lg shadow-2xl">
+            {['Great movie!', 'Loved the plot twist!', 'Highly recommend watching with friends.'].map((comment, index) => (
+              <div key={index} className="mb-6 pb-6 border-b border-gray-700 last:border-b-0 last:mb-0 last:pb-0">
+                <p className="text-gray-300 mb-2">{comment}</p>
+                <p className="text-yellow-400 text-sm">Andy Peng</p>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-black py-6 text-center">
-        <p className="text-gray-400">
-          &copy; {new Date().getFullYear()} UCLA Bruin Watch. All rights reserved.
-        </p>
+      <footer className="bg-black py-8 text-center">
+        <div className="container mx-auto px-6">
+          <img
+            src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
+            alt="Bruin Logo"
+            className="mx-auto mb-4 w-20 h-20 object-contain"
+          />
+          <p className="text-gray-400">
+            &copy; {new Date().getFullYear()} UCLA Bruin Watch. All rights reserved.
+          </p>
+        </div>
       </footer>
     </div>
   );
 };
 
-// Spinner Component (for loading state)
+// Updated Spinner Component
 const Spinner: React.FC = () => (
-  <div className="flex justify-center items-center">
-    <svg
-      className="animate-spin h-8 w-8 text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v8H4z"
-      ></path>
-    </svg>
-  </div>
+  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-400"></div>
 );
 
 export default MovieDetailsPage;
