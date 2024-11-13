@@ -1,20 +1,24 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../lib/mongodb";
+import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
+// Configure your email transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log("Signin handler called");
-  console.log('Email User:', process.env.EMAIL_USER);
-  console.log('Email Pass set:', !!process.env.EMAIL_PASS);
-  console.log('Email Pass length:', process.env.EMAIL_PASS?.length);
   if (req.method !== "POST") {
-    res.setHeader("Allow", ["POST"]);
     return res.status(405).json({ message: `Method ${req.method} not allowed` });
   }
 
-  const { email, password } = req.body;
+  const { email, password, otp } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
@@ -24,49 +28,53 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = await connectToDatabase();
     const usersCollection = db.collection("users");
 
-    const user = await usersCollection.findOne({ email, password });
-    if (!user) {
+    // Find the user
+    const user = await usersCollection.findOne({ email });
+    if (!user || user.password !== password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Generate OTP
-    const otp = crypto.randomInt(100000, 999999).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+    // If OTP is provided, verify it
+    if (otp) {
+      if (user.otp !== otp || new Date() > new Date(user.otpExpiry)) {
+        return res.status(400).json({ message: "Invalid or expired OTP" });
+      }
 
-    // Save OTP to user document
-    await usersCollection.updateOne(
-      { _id: user._id },
-      { $set: { otp, otpExpiry } }
+      // Clear OTP after successful verification
+      await usersCollection.updateOne({ email }, { $unset: { otp: "", otpExpiry: "" } });
+    } else {
+      // Generate and send OTP
+      const newOTP = crypto.randomBytes(3).toString("hex");
+      const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP expires in 10 minutes
+
+      await usersCollection.updateOne({ email }, { $set: { otp: newOTP, otpExpiry } });
+
+      // Send OTP via email
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Your Sign-In OTP for BruinMovies",
+        text: `Your OTP is: ${newOTP}. It will expire in 10 minutes.`,
+        html: `<p>Your OTP is: <strong>${newOTP}</strong>. It will expire in 10 minutes.</p>`,
+      });
+
+      return res.status(200).json({ message: "OTP sent to email", requiresOTP: true });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id.toString(), email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1h" } // Token expires in 1 hour
     );
 
-    // Send OTP via email
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      },
-      debug: true // Enable debug logs
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Sign-in Verification Code',
-      text: `Your verification code is: ${otp}. This code will expire in 10 minutes.`
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(200).json({ 
-      message: "Credentials verified. Please check your email for the verification code.", 
-      requiresOTP: true 
+    return res.status(200).json({
+      message: "Sign-in successful",
+      token,
+      username: user.username
     });
   } catch (error) {
-    console.error("Sign-In Error:", error as Error);
-    console.error("Error details:", JSON.stringify(error as Error, null, 2));
-    res.status(500).json({ message: "Internal server error", error: (error as Error).message });
+    console.error("Sign-In Error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }

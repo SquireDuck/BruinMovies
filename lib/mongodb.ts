@@ -1,6 +1,6 @@
 import { MongoClient, MongoClientOptions, Db } from "mongodb";
 
-const uri = "mongodb+srv://florence1z:UtwWxtGMcn6xyADr@cluster0.2wl7r.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://florence1z:UtwWxtGMcn6xyADr@cluster0.2wl7r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 const options: MongoClientOptions = {
   serverApi: {

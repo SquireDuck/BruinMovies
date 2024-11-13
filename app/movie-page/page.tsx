@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import router for redirection
 import axios from "axios";
 
 interface Movie {
@@ -23,6 +24,8 @@ const MoviePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const router = useRouter(); // Initialize router for navigation
 
   useEffect(() => {
     const fetchTheaters = async () => {
@@ -58,9 +61,9 @@ const MoviePage: React.FC = () => {
           <img
             src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
             alt="Bruin Logo"
-            className="w-28 h-28 object-contain" // Increased from w-12 h-12 to w-20 h-20
+            className="w-28 h-28 object-contain"
           />
-          <div className="relative">
+          <div className="relative flex items-center gap-4">
             <input
               type="text"
               placeholder="Search movies..."
@@ -79,6 +82,12 @@ const MoviePage: React.FC = () => {
             >
               <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
+            <button
+              onClick={() => router.push("/profile")}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
+            >
+              Edit Profile
+            </button>
           </div>
         </div>
       </header>
