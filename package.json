@@ -20,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
+    "formidable": "^3.5.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.1",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/formidable": "^3.4.5",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
     "@types/react": "^18.3.12",

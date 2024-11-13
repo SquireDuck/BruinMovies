@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../lib/mongodb";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -7,36 +8,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ message: `Method ${req.method} not allowed` });
   }
 
-  const { email, password, otp } = req.body;
+  const { email, password, username } = req.body;
 
   try {
     const db = await connectToDatabase();
     const usersCollection = db.collection("users");
 
-    // Find the user
-    const user = await usersCollection.findOne({ email });
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    // Check if user already exists
+    const existingUser = await usersCollection.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    // If OTP verification is needed, verify the OTP
-    if (otp) {
-      if (user.otp !== otp || new Date() > new Date(user.otpExpiry)) {
-        return res.status(400).json({ message: "Invalid or expired OTP" });
-      }
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Clear OTP after successful verification
-      await usersCollection.updateOne({ email }, { $unset: { otp: "", otpExpiry: "" } });
-    }
-
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET!, {
-      expiresIn: "1h", // Token expires in 1 hour
+    // Create new user
+    const result = await usersCollection.insertOne({
+      email,
+      password: hashedPassword,
+      username,
     });
 
-    return res.status(200).json({ message: "Sign-in successful", token, username: user.username });
+    // Generate JWT token
+    const token = jwt.sign({ userId: result.insertedId, email }, process.env.JWT_SECRET!, {
+      expiresIn: "1h",
+    });
+
+    return res.status(201).json({ message: "User created successfully", token, username });
   } catch (error) {
-    console.error("Sign-In Error:", error);
+    console.error("Sign-Up Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
