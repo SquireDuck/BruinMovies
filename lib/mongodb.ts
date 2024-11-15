@@ -1,6 +1,6 @@
 import { MongoClient, MongoClientOptions, Db } from "mongodb";
 
-const uri = "mongodb+srv://florence1z:UtwWxtGMcn6xyADr@cluster0.2wl7r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = process.env.MONGODB_URI as string;
 
 const options: MongoClientOptions = {
   serverApi: {
@@ -26,5 +26,5 @@ clientPromise = global._mongoClientPromise;
 
 export async function connectToDatabase(): Promise<Db> {
   const client = await clientPromise;
-  return client.db("BruinMovie"); // Your database name
+  return client.db("bruinmovies"); // Your database name
 }

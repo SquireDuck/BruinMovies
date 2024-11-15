@@ -34,6 +34,7 @@ const SignInPage: React.FC = () => {
 
       alert("User registered successfully!");
       setIsRegister(false);
+      router.push("/signin");
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     }

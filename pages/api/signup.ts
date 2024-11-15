@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const token = jwt.sign({ userId: result.insertedId, email }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
-
+    
     return res.status(201).json({ message: "User created successfully", token, username });
   } catch (error) {
     console.error("Sign-Up Error:", error);

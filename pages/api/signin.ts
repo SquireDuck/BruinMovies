@@ -3,6 +3,7 @@ import { connectToDatabase } from "../../lib/mongodb";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import bcrypt from 'bcryptjs';
 
 // Configure your email transporter
 const transporter = nodemailer.createTransport({
@@ -30,7 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Find the user
     const user = await usersCollection.findOne({ email });
-    if (!user || user.password !== password) {
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
