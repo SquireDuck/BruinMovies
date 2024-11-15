@@ -1,0 +1,15 @@
+
+step 1) install everything
+
+npm install crypto
+npm install python
+npm install @types/nodemailer
+npm install nodemailer mongodb dotenv
+npm install --save-dev @types/jsonwebtoken
+npm i --save-dev @types/formidable
+step 2) enter python virtual 
+    (python3 -m venv myenv)
+    source myenv/bin/activate //line and above activates
+    pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
+
+step 3) run backend

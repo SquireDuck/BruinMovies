@@ -1,101 +1,252 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+const SignInPage: React.FC = () => {
+  const [isRegister, setIsRegister] = useState(false);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [requiresOTP, setRequiresOTP] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [newOTP, setNewOTP] = useState("");
+  const [otpExpiry, setOtpExpiry] = useState<Date | null>(null);
+
+  const router = useRouter();
+
+  const sendOtp = async (email: string) => {
+    const response = await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send OTP.");
+    }
+
+    const data = await response.json();
+    setNewOTP(data.otp);
+    setOtpExpiry(new Date(data.otpExpiry));
+  };
+
+  const handleRegister = async () => {
+    if (!username || !email || !password) {
+      setError("All fields are required.");
+      return;
+    }
+
+    try {
+
+      sendOtp(email);
+
+      setRequiresOTP(true);
+      setError(null);
+      alert("Please check your email for the verification code.");
+
+      setIsRegister(false);
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
+  };
+
+  const handleSignIn = async () => {
+    if (!username || !password) {
+      setError("Username and password are required.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to sign in.");
+      }
+
+      localStorage.setItem("authToken", data.token);
+      alert(`Welcome back, ${data.username}!`);
+      router.push("/movie-page");
+
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
+  };
+
+  const handleOTPVerification = async () => {
+    if (!otp) {
+      setError("Verification code is required.");
+      return;
+    }
+
+    try {
+      if (newOTP !== otp) {
+        throw new Error("Invalid OTP");
+        setOtp("");
+      }
+
+      if (otpExpiry && new Date() > new Date(otpExpiry)) {
+        throw new Error("OTP has expired");
+      }
+
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to register.");
+      }
+
+      localStorage.setItem("authToken", data.token);
+      setUsername(data.username); // Update username state
+      alert(`Welcome ${data.username}!`);
+
+      router.push("/movie-page");
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
+      <nav className="bg-gray-900 px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <img
+            src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
+            alt="Bruin Movies Logo"
+            className="w-64 h-64 object-contain"
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </nav>
+
+      <div className="flex flex-col items-center justify-center px-4 md:px-0 py-8">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+          <h1 className="text-3xl font-bold text-yellow-400 mb-6 text-center">
+            {isRegister ? "Register" : requiresOTP ? "Verify OTP" : "Sign In"}
+          </h1>
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          <form onSubmit={(e) => e.preventDefault()}>
+            {isRegister && (
+              <div className="mb-4">
+                <label htmlFor="username" className="block text-gray-300 mb-2">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  placeholder="Enter your username"
+                  required
+                />
+              </div>
+            )}
+            {!requiresOTP && (
+              <>
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="password" className="block text-gray-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+              </>
+            )}
+            {requiresOTP && (
+              <div className="mb-4">
+                <label htmlFor="otp" className="block text-gray-300 mb-2">
+                  Verification Code
+                </label>
+                <input
+                  id="otp"
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                  placeholder="Enter verification code"
+                />
+              </div>
+            )}
+            <button
+              type="submit"
+              className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition"
+              onClick={() => {
+                if (requiresOTP) {
+                  handleOTPVerification();
+                } else if (isRegister) {
+                  handleRegister();
+                } else {
+                  handleSignIn();
+                }
+              }}
+            >
+
+              {isRegister ? "Register" : requiresOTP ? "Verify" : "Sign In"}
+            </button>
+            {requiresOTP && (
+              <button
+                type="submit"
+                className="w-full px-6 py-3 bg-yellow-500 text-black font-bold rounded-lg hover:bg-yellow-600 transition mt-4
+                "
+                onClick={() => {
+                  setRequiresOTP(false);
+                  setError(null);
+                }}>
+                Go Back
+              </button>
+            )}
+          </form>
+          {!requiresOTP && (
+            <p className="text-center text-gray-300 mt-4">
+              {isRegister ? "Already have an account?" : "Don't have an account yet?"}{" "}
+              <span
+                className="text-yellow-400 cursor-pointer"
+                onClick={() => {
+                  setIsRegister(!isRegister);
+                  setError(null);
+                  setRequiresOTP(false);
+                  setOtp("");
+                }}
+              >
+                {isRegister ? "Sign In" : "Register"}
+              </span>
+            </p>
+          )}
+        </div>
+      </div>
+    </div >
   );
-}
+};
+
+export default SignInPage;
