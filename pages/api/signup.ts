@@ -3,12 +3,16 @@ import { connectToDatabase } from "../../lib/mongodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+const getDefaultProfilePicture = (username: string) => {
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${username}`;
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: `Method ${req.method} not allowed` });
   }
 
-  const { email, password, username } = req.body;
+  const { email, password, username} = req.body;
 
   try {
     const db = await connectToDatabase();
@@ -23,18 +27,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const profilePicture = getDefaultProfilePicture(username);
+
     // Create new user
     const result = await usersCollection.insertOne({
       email,
       password: hashedPassword,
       username,
+      profilePicture: profilePicture,
     });
 
     // Generate JWT token
     const token = jwt.sign({ userId: result.insertedId, email }, process.env.JWT_SECRET!, {
       expiresIn: "1h",
     });
-    
+
     return res.status(201).json({ message: "User created successfully", token, username });
   } catch (error) {
     console.error("Sign-Up Error:", error);

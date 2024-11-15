@@ -20,6 +20,13 @@ const ProfilePage = () => {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
+
+  useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("authToken");
@@ -120,7 +127,7 @@ const ProfilePage = () => {
 
   const handleSignOut = () => {
     localStorage.removeItem("authToken");
-    router.push("/login");
+    router.push("/");
   };
 
   if (!profile)
@@ -133,19 +140,30 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans">
       {/* Header */}
-      <nav className="bg-black shadow sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+      <nav className="bg-black shadow sticky top-0 z-10 flex flex-row">
+        <div className="px-6 py-4 flex justify-between items-center w-full">
+
           <img
             src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
             alt="Bruin Logo"
-            className="w-28 h-28 object-contain"
+            className="w-28 h-28 object-contain cursor-pointer"
+            onClick={() => router.push("/movie-page")}
           />
-          <button
-            onClick={handleSignOut}
-            className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
-          >
-            Sign Out
-          </button>
+          <div>
+
+            <button
+              onClick={handleSignOut}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded mx-10"
+            >
+              Sign Out
+            </button>
+            <button
+              onClick={() => router.push("/movie-page")}
+              className=" bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -164,15 +182,15 @@ const ProfilePage = () => {
         )}
         <div className="absolute left-6 -bottom-12">
           <img
-            src={profile.profilePicture || "/default-profile.png"}
+            src={profile.profilePicture}
             alt="Profile"
-            className="w-24 h-24 object-cover rounded-full border-4 border-black shadow-lg"
+            className="w-24 h-24 object-cover rounded-full border-4 bg-slate-300 border-black shadow-lg"
           />
         </div>
         {!isEditing && (
           <button
             onClick={handleEdit}
-            className="absolute right-6 bottom-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded-full transition"
+            className="absolute right-6 bottom-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition"
           >
             Edit
           </button>

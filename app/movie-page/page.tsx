@@ -24,8 +24,16 @@ const MoviePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
 
   const router = useRouter(); // Initialize router for navigation
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
 
   useEffect(() => {
     const fetchTheaters = async () => {
@@ -43,6 +51,33 @@ const MoviePage: React.FC = () => {
     fetchTheaters();
   }, []);
 
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          throw new Error("No authentication token found.");
+        }
+
+        const response = await fetch("/api/photo", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setProfilePicture(data.profilePicture);
+        } else {
+          throw new Error("Failed to fetch photo");
+        }
+      } catch (error) {
+        console.error("Error fetching photo:", error);
+        setError("Failed to load photo. Please try again.");
+      }
+    };
+
+    fetchProfilePicture();
+  }, []);
+
   const filteredMovies = () => {
     if (!searchQuery) return theaters;
     return theaters.map((theater) => ({
@@ -53,15 +88,20 @@ const MoviePage: React.FC = () => {
     }));
   };
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
+
       {/* Header */}
-      <header className="bg-black shadow-lg sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+      <header className="bg-black shadow-lg sticky top-0 z-10 ">
+
+        <div className=" px-6 py-4 flex justify-between items-center w-full">
           <img
             src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
             alt="Bruin Logo"
-            className="w-28 h-28 object-contain"
+            className="w-28 h-28 object-contain cursor-pointer"
+            onClick={() => router.push("/movie-page")}
           />
           <div className="relative flex items-center gap-4">
             <input
@@ -82,12 +122,22 @@ const MoviePage: React.FC = () => {
             >
               <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
+
             <button
               onClick={() => router.push("/profile")}
               className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
             >
               Edit Profile
             </button>
+
+            {profilePicture && (
+              <img
+                src={profilePicture}
+                alt="Profile"
+                className=" w-20 h-20 rounded-full cursor-pointer right-0"
+                onClick={() => router.push("/profile")}
+              />
+            )}
           </div>
         </div>
       </header>
@@ -160,7 +210,7 @@ const MovieCard: React.FC<{ movie: Movie }> = ({ movie }) => (
         <p className="text-gray-400 text-xs truncate">
           <strong>Showtimes:</strong>{" "}
           {movie.showtimes === "No showtimes available on IMDb." ||
-          movie.showtimes === "N/A"
+            movie.showtimes === "N/A"
             ? "No showtimes listed"
             : movie.showtimes}
         </p>
