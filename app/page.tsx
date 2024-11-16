@@ -88,7 +88,6 @@ const SignInPage: React.FC = () => {
     try {
       if (newOTP !== otp) {
         throw new Error("Invalid OTP");
-        setOtp("");
       }
 
       if (otpExpiry && new Date() > new Date(otpExpiry)) {
@@ -137,16 +136,16 @@ const SignInPage: React.FC = () => {
           <form onSubmit={(e) => e.preventDefault()}>
             {isRegister && (
               <div className="mb-4">
-                <label htmlFor="username" className="block text-gray-300 mb-2">
-                  Username
+                <label htmlFor="email" className="block text-gray-300 mb-2">
+                  Email
                 </label>
                 <input
-                  id="username"
+                  id="email"
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                  placeholder="Enter your username"
+                  placeholder="Enter your email"
                   required
                 />
               </div>
@@ -154,19 +153,20 @@ const SignInPage: React.FC = () => {
             {!requiresOTP && (
               <>
                 <div className="mb-4">
-                  <label htmlFor="email" className="block text-gray-300 mb-2">
-                    Email
+                  <label htmlFor="username" className="block text-gray-300 mb-2">
+                    Username
                   </label>
                   <input
-                    id="email"
+                    id="username"
                     type="text"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                    placeholder="Enter your email"
+                    placeholder="Enter your username"
                     required
                   />
                 </div>
+
                 <div className="mb-6">
                   <label htmlFor="password" className="block text-gray-300 mb-2">
                     Password
