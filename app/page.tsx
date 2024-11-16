@@ -45,19 +45,26 @@ export default function Home() {
   ];
 
   return (
-    
-      <section className="pt-10 my-3 grid grid-cols-4 auto-rows[2] flex flex-row justify-center text-center border-2 border-black" >
+    <div>
+        <div className="justify-center text-center items-center background-color">
+          <h1>Header</h1>
+        </div>
+
+        <section className="px-10 my-10 grid grid-cols-4 auto-rows[10px] gap-4 " >
         {data.map(({imageLink}, index) => (
           <Image 
             loader={()=> imageLink}
             src={imageLink} 
             alt="image"
-            width = {350}
-            height = {350}
-            
+            width = {550}
+            height = {550}
+            sizes=""
           />
         ))}
-      </section>
+        </section>
+
+    </div>
+    
 
   );
 }

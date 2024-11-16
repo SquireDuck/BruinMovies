@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import '../_styles/globals.css';
 
 
 
@@ -11,13 +11,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
-      <body
-
-      >
+      <body>
         {children}
       </body>
     </html>
