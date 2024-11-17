@@ -274,8 +274,7 @@ const ProfilePage = () => {
                                 <label className="block text-gray-300 mb-2 font-medium">
                                     Year
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     value={profile.year}
                                     onChange={(e) =>
                                         setProfile({
@@ -284,7 +283,16 @@ const ProfilePage = () => {
                                         })
                                     }
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
+                                >
+                                    <option value="" disabled>
+                                        Select your year
+                                    </option>
+                                    <option value="Freshman">Freshman</option>
+                                    <option value="Sophomore">Sophomore</option>
+                                    <option value="Junior">Junior</option>
+                                    <option value="Senior">Senior</option>
+                                    <option value="Graduate">Graduate</option>
+                                </select>
                             </div>
 
                             {/* Major */}
@@ -310,8 +318,8 @@ const ProfilePage = () => {
                                 <label className="block text-gray-300 mb-2 font-medium">
                                     Genre Interests
                                 </label>
-                                <input
-                                    type="text"
+                                <select
+                                    // type="text"
                                     value={profile.genre_interests}
                                     onChange={(e) =>
                                         setProfile({
@@ -320,7 +328,29 @@ const ProfilePage = () => {
                                         })
                                     }
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
+                                >
+                                    <option value="" disabled>
+                                        Select your genre interests
+                                    </option>
+                                    <option value="Action">Action</option>
+                                    <option value="Adventure">Adventure</option>
+                                    <option value="Animation">Animation</option>
+                                    <option value="Comedy">Comedy</option>
+                                    <option value="Crime">Crime</option>
+                                    <option value="Drama">Drama</option>
+                                    <option value="Fantasy">Fantasy</option>
+                                    <option value="Historical">
+                                        Historical
+                                    </option>
+                                    <option value="Horror">Horror</option>
+                                    <option value="Musical">Musical</option>
+                                    <option value="Mystery">Mystery</option>
+                                    <option value="Romance">Romance</option>
+                                    <option value="Science Fiction">
+                                        Science Fiction
+                                    </option>
+                                    <option value="Thriller">Thriller</option>
+                                </select>
                             </div>
 
                             {/* Biography */}
