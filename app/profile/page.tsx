@@ -328,7 +328,7 @@ const ProfilePage = () => {
                                         setProfile({
                                             ...profile,
                                             genre_interests:
-                                                selectedOptions.join(","),
+                                                selectedOptions.join(", "),
                                         });
                                     }}
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -456,6 +456,30 @@ const ProfilePage = () => {
                                 </h2>
                                 <p>{profile.email}</p>
                             </div>
+
+                            <div>
+                                <h3 className="text-xl font-medium text-gray-200 mb-2">
+                                    Year
+                                </h3>
+                                <p className="text-gray-300">{profile.year}</p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-medium text-gray-200 mb-2">
+                                    Major
+                                </h3>
+                                <p className="text-gray-300">{profile.major}</p>
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-medium text-gray-200 mb-2">
+                                    Genre Interests
+                                </h3>
+                                <p className="text-gray-300">
+                                    {profile.genre_interests}
+                                </p>
+                            </div>
+
                             <div>
                                 <h3 className="text-xl font-medium text-gray-200 mb-2">
                                     Biography
