@@ -22,6 +22,7 @@ const MovieDetailsPage: React.FC = () => {
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [watching, setWatching] = useState<boolean>(false);
 
   useEffect(() => {
     if (!imdbId || typeof imdbId !== "string") return;
@@ -62,6 +63,30 @@ const MovieDetailsPage: React.FC = () => {
     return <div className="text-center text-gray-400 min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-blue-900">Movie not found.</div>;
   }
 
+       
+  const UpdateWatchStatus = async () => {
+    try {
+      setWatching(true);
+      const formData = new FormData();
+      formData.append("planToWatch", movie.title);
+//`localhost:3000/${imdbId}`
+      const response = await fetch('/api/signin', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: formData,
+      });
+      
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to register.");
+      }
+      
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
+    }
+      
+  };
+                  
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
       {/* Enhanced Header */}
@@ -93,12 +118,28 @@ const MovieDetailsPage: React.FC = () => {
                 <FaStar className="text-yellow-400 mr-2" />
                 <span className="text-2xl">{movie.rating === "N/A" ? "Not Rated" : movie.rating}</span>
               </div>
-              <button className="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full hover:bg-yellow-300 transition duration-300 flex items-center">
-                <FaTicketAlt className="mr-2" />
-                Get Tickets
+
+              <button 
+              className="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full hover:bg-yellow-300 transition duration-300 flex items-center"
+                
+              onClick={() => {
+                UpdateWatchStatus();
+                }}
+                >
+                Add to watchList
               </button>
             </div>
-          </div>
+
+            
+
+        {/* WatchList Section*/}
+        <div className="bg-gray-800 text-black font-bold py-3 px-8 rounded-lg hover:bg-yellow-300 transition duration-300 flex items-center">
+          <h3 className="text-3xl font-bold mb-6 text-yellow-400">People who want to watch the movie</h3>  
+          <p className="text-gray-300 text-md mb-4 leading-relaxed">{movie.description}</p>
+        </div>
+
+
+        </div>
         </div>
       </section>
 
