@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { FaStar, FaClock, FaTicketAlt, FaArrowLeft, FaCommentAlt } from 'react-icons/fa';
+import CommentForm from "./comment";
 
 interface MovieDetails {
   title: string;
@@ -143,6 +144,7 @@ const MovieDetailsPage: React.FC = () => {
               </div>
             ))}
           </div>
+          <CommentForm />
         </div>
       </main>
 
