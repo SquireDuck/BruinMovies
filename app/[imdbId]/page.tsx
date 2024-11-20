@@ -144,7 +144,7 @@ const MovieDetailsPage: React.FC = () => {
               </div>
             ))}
           </div>
-          <CommentForm />
+          <CommentForm movieName = {movie.title} />
         </div>
       </main>
 
