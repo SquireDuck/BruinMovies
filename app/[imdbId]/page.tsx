@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { FaStar, FaClock, FaTicketAlt, FaArrowLeft, FaCommentAlt } from 'react-icons/fa';
-import CommentForm from "./comment";
+import CommentForm from "./postcomment";
+import DisplayComments from "./displaycomment";
 
 interface MovieDetails {
   title: string;
@@ -136,14 +137,7 @@ const MovieDetailsPage: React.FC = () => {
             <FaCommentAlt className="mr-4" />
             Student Reviews
           </h3>
-          <div className="bg-gray-800 p-8 rounded-lg shadow-2xl">
-            {['Great movie!', 'Loved the plot twist!', 'Highly recommend watching with friends.'].map((comment, index) => (
-              <div key={index} className="mb-6 pb-6 border-b border-gray-700 last:border-b-0 last:mb-0 last:pb-0">
-                <p className="text-gray-300 mb-2">{comment}</p>
-                <p className="text-yellow-400 text-sm">Andy Peng</p>
-              </div>
-            ))}
-          </div>
+          <DisplayComments movieName={movie.title} userId="123" />
           <CommentForm movieName = {movie.title} />
         </div>
       </main>
