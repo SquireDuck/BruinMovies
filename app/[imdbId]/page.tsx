@@ -14,11 +14,28 @@ interface MovieDetails {
   genres: string[]; // Added genres
 }
 
-const MovieDetailsPage: React.FC = () => {
+interface Profile {
+  username: string;
+  email: string;
+
+  // Newly added fields
+  year: string;
+  major: string;
+  genre_interests: string;
+
+  biography: string;
+  profilePicture: string;
+  bannerPicture: string;
+  watchList: string;
+}
+
+
+const MovieDetailsPage = () => {
   const params = useParams() as { imdbId: string };
   const { imdbId } = params;
   const router = useRouter();
 
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +64,33 @@ const MovieDetailsPage: React.FC = () => {
     fetchMovieDetails();
   }, [imdbId]);
 
+  useEffect(() => {
+    const fetchProfile2 = async () => {
+        try {
+            const token = localStorage.getItem("authToken");
+            if (!token) {
+                throw new Error("No authentication token found.");
+            }
+
+            const response = await fetch("/api/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setProfile(data);
+            } else {
+                throw new Error("Failed to fetch profile");
+            }
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+            setError("Failed to load profile. Please try again.");
+        }
+    };
+
+    fetchProfile2();
+}, []);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-black to-blue-900">
@@ -65,26 +109,48 @@ const MovieDetailsPage: React.FC = () => {
 
        
   const UpdateWatchStatus = async () => {
+    if(!profile) return;
     try {
-      setWatching(true);
-      const formData = new FormData();
-      formData.append("planToWatch", movie.title);
-//`localhost:3000/${imdbId}`
-      const response = await fetch('/api/signin', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: formData,
-      });
-      
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to register.");
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+          throw new Error("No authentication token found.");
       }
-      
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
-    }
-      
+      setWatching(true);
+
+      const formData = new FormData();
+
+      formData.append("username", "vik");
+      formData.append("email", profile.email);
+
+      // Newly added fields
+      formData.append("year", profile.year);
+      formData.append("major", profile.major);
+      formData.append("genre_interests", profile.genre_interests);
+
+      formData.append("biography", profile.biography);
+      formData.append("watching", profile.watchList);
+
+
+      const response = await fetch("/api/profile", {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+      });
+
+
+      if (response.ok) {
+          const updatedProfile = await response.json();
+          setProfile(updatedProfile);
+      } else {
+          const errorData = await response.json();
+          throw new Error(
+              errorData.message || "Failed to update profile",
+          );
+      }
+  } catch (error) {
+      console.error("Error updating profile:", error);
+      setError("Failed to update profile. Please try again.");
+  }
   };
                   
   return (
@@ -205,7 +271,7 @@ const MovieDetailsPage: React.FC = () => {
 };
 
 // Updated Spinner Component
-const Spinner: React.FC = () => (
+const Spinner = () => (
   <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-400"></div>
 );
 

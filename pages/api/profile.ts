@@ -55,6 +55,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         username: user.username,
         email: user.email,
         biography: user.biography || "",
+        //new
+            year: user.year || "",
+            major: user.major || "",
+            genre_interests: user.genre_interests || "",
+            watchList: user.watchList || "",
+        //new
         profilePicture: user.profilePicture || "",
         bannerPicture: user.bannerPicture || "",
       });
@@ -76,6 +82,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (fields.username) updateFields.username = trimField(fields.username);
         if (fields.email) updateFields.email = trimField(fields.email);
         if (fields.biography) updateFields.biography = trimField(fields.biography);
+        //new
+        if (fields.year) updateFields.year = trimField(fields.year);
+        if (fields.major) updateFields.major = trimField(fields.major);
+        if (fields.genre_interests) updateFields.genre_interests = trimField(fields.genre_interests,);
+        if(fields.watchList) updateFields.watchList = trimField(fields.watchList);
+        //new
 
         // Process profile picture
         if (files.profilePicture) {
@@ -118,6 +130,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({
           username: updatedUser.username,
           email: updatedUser.email,
+           //new
+           year: updatedUser.year || "",
+           major: updatedUser.major || "",
+           genre_interests: updatedUser.genre_interests || "",
+           watchList: updatedUser.watchList || "",
+           //new
           biography: updatedUser.biography || "",
           profilePicture: updatedUser.profilePicture || "",
           bannerPicture: updatedUser.bannerPicture || "",
