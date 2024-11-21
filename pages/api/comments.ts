@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    const { comment, movieName } = req.body;
+    const { user, comment, movieName } = req.body;
 
     if (!comment || typeof comment !== "string") {
       return res.status(400).json({ error: "Invalid comment" });
@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const commentsCollection = db.collection("Comments");
 
       // Insert the comment into the "Comments" collection
-      const result = await commentsCollection.insertOne({ movieName, comment, likes: 0, likedBy: [], createdAt: new Date() });
+      const result = await commentsCollection.insertOne({ user, movieName, comment, likes: 0, likedBy: [], createdAt: new Date() });
 
       return res.status(201).json({ message: "Comment added", commentId: result.insertedId });
     } catch (error) {
@@ -55,14 +55,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   /////
 
   if (req.method === "PATCH") {
-    const { commentId, userId } = req.body;
+    const { commentId, email } = req.body;
   
     if (!commentId || typeof commentId !== "string") {
       return res.status(400).json({ error: "Comment ID is required" });
     }
 
-    if (!userId || typeof userId !== "string") {
-      return res.status(400).json({ error: "User ID is required and must be a string." });
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({ error: "Email is required and must be a string." });
     }
   
     try {
@@ -78,19 +78,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(404).json({ error: "Comment not found." });
       }
 
-      if (comment.likedBy && comment.likedBy.includes(userId)) {
-        return res.status(403).json({ error: "User has already liked this comment." });
+      // if (comment.likedBy && comment.likedBy.includes(email)) {
+      //   return res.status(403).json({ error: "User has already liked this comment." });
+      // }
+      const isLiked = comment.likedBy.includes(email);
+
+      const updateAction: Record<string, any> = {
+        $inc: { likes: isLiked ? -1 : 1 },
+      };
+  
+      if (isLiked) {
+        updateAction.$pull = { likedBy: email };
+      } else {
+        updateAction.$push = { likedBy: email };
       }
 
-      // Increment the likes of the specified comment
-      const result = await commentsCollection.updateOne(
-        { _id: objectId }, // Match by ID
-        { 
-          $inc: { likes: 1 },     // Increment likes by 1
-          $push: { likedBy: userId as never } // Add the userId to the likedBy array
-        } 
-      );
-  
+      // Execute the update action
+      const result = await commentsCollection.updateOne({ _id: objectId }, updateAction);
+
       if (result.modifiedCount === 0) {
         return res.status(404).json({ error: "Comment not found" });
       }

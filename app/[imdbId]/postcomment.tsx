@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CommentForm = ({movieName}:{movieName: string}) => {
+const CommentForm = ({movieName, user}:{movieName: string, user: string}) => {
   const [comment, setComment] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -15,7 +15,7 @@ const CommentForm = ({movieName}:{movieName: string}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ comment, movieName }),
+        body: JSON.stringify({ user, comment, movieName }),
       });
       
       // console.log("Token:", token);
@@ -23,7 +23,7 @@ const CommentForm = ({movieName}:{movieName: string}) => {
       // console.log("Response Body:", await response.json()); 
 
       if (response.ok) {
-        alert("Comment submitted successfully!");
+        alert("Comment submitted successfully! Refresh to see");
         setComment(""); // Clear the input field
       } else {
         alert("Failed to submit the comment.");

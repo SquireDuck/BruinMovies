@@ -24,6 +24,8 @@ const MovieDetailsPage: React.FC = () => {
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     if (!imdbId || typeof imdbId !== "string") return;
@@ -47,6 +49,37 @@ const MovieDetailsPage: React.FC = () => {
 
     fetchMovieDetails();
   }, [imdbId]);
+
+  /// This is to fetch username and email for comments
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          throw new Error("No authentication token found.");
+        }
+
+        const response = await fetch("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.username);
+          setEmail(data.email);
+          // console.log("User:", data.username);
+          // console.log("User ID:", data.email);
+        } else {
+          throw new Error("Failed to fetch profile");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setError("Failed to load profile. Please try again.");
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   if (loading) {
     return (
@@ -137,8 +170,8 @@ const MovieDetailsPage: React.FC = () => {
             <FaCommentAlt className="mr-4" />
             Student Reviews
           </h3>
-          <DisplayComments movieName={movie.title} userId="123" />
-          <CommentForm movieName = {movie.title} />
+          <DisplayComments movieName={movie.title} user={user} email={email}/>
+          <CommentForm movieName = {movie.title} user={user}/>
         </div>
       </main>
 

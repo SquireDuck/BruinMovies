@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 
 interface Comment {
   _id: string;
+  user: string;
   movieName: string;
   comment: string;
   likes: number;
@@ -10,16 +11,8 @@ interface Comment {
   createdAt: string;
 }
 
-/////
 
-/// See the prop userId:
-/// Hard coded for now; should be the actual user ID
-/// In page.tsx, userId is passed as a prop to this function
-/// Change the hardcode into the actual userID
-
-/////
-
-const DisplayComments = ({ movieName, userId }: { movieName: string, userId: string }) => {
+const DisplayComments = ({ movieName, user, email }: { movieName: string, user: string, email: string }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,14 +48,22 @@ const DisplayComments = ({ movieName, userId }: { movieName: string, userId: str
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ commentId, userId }),
+        body: JSON.stringify({ commentId, email }),
       });
 
       if (response.ok) {
         setComments((prevComments) =>
           prevComments.map((comment) =>
             comment._id === commentId
-              ? { ...comment, likes: comment.likes + 1 }
+              ? {
+                  ...comment,
+                  likes: comment.likedBy.includes(email)
+                    ? comment.likes - 1 // Decrement likes if already liked
+                    : comment.likes + 1, // Increment likes if not already liked
+                  likedBy: comment.likedBy.includes(email)
+                    ? comment.likedBy.filter((id) => id !== email) // Remove user from likedBy
+                    : [...comment.likedBy, email], // Add user to likedBy
+                }
               : comment
           )
         );
@@ -91,18 +92,18 @@ const DisplayComments = ({ movieName, userId }: { movieName: string, userId: str
       {comments.length > 0 ? (
         <ul className="space-y-4">
           {comments.map((comment, index) => (
-            <li key={index} className="p-4 bg-gray-800 rounded-lg">
-              <p className="text-white">{comment.comment}</p>
+            <li key={index} className="p-4 bg-gray-800 rounded-lg shadow-2xl hover:shadow-yellow-400/20 transition duration-300">
+              <p className="text-yellow-600">{comment.user}</p>
+              <p className="text-white mt-2">{comment.comment}</p>
               <div className="text-sm text-gray-500 mt-2">
                 <span>Likes: {comment.likes}</span> |{" "}
                 <span>{new Date(comment.createdAt).toLocaleString()}</span>
               </div>
               <button
                 onClick={() => handleLike(comment._id)}
-                className="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                disabled={comment.likedBy?.includes(userId)} // Disable button if already liked
+                className='mt-2 px-4 py-1 rounded bg-blue-500 text-white hover:bg-blue-600'
               >
-                Like
+                {comment.likedBy.includes(email) ? "Liked" : "Like"}
               </button>
             </li>
           ))}
