@@ -178,13 +178,13 @@ const MovieDetailsPage: React.FC = () => {
                   <div className="flex flex-col space-y-4">
                     {usersWithMovie.length > 0 ? (
                       usersWithMovie.map((user, index) => (
-                      <div key={index} className="flex items-center bg-gray-700 text-yellow-400 py-3 px-3 rounded-full hover:bg-gray-600 transition duration-300">
-                      <img src={user.profilePicture} alt={`${user.username}'s profile`} className="w-12 h-12 rounded-full mr-4" />
-                        <div className="flex flex-row items-center w-full">
-                        <span className="text-lg truncate max-w-[25%]">{user.username}</span>
-                        <p className="text-gray-300 text-sm truncate ml-4 flex-1 mr-16">{user.biography}</p>
+                        <div key={index} className="flex items-center bg-gray-700 text-yellow-400 py-3 px-3 rounded-full hover:bg-gray-600 transition duration-300">
+                          <img src={user.profilePicture} alt={`${user.username}'s profile`} className="w-12 h-12 rounded-full mr-4" />
+                          <div className="flex flex-row items-center w-full">
+                            <span className="text-lg truncate max-w-[25%]">{user.username}</span>
+                            <p className="text-gray-300 text-sm truncate ml-4 flex-1 mr-16">{user.biography || "No bio yet!"}</p>
+                          </div>
                         </div>
-                      </div>
                       ))
                     ) : (
                       <div className="text-gray-400">No users in watchlist.</div>
