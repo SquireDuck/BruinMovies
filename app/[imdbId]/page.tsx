@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { FaStar, FaClock, FaTicketAlt, FaArrowLeft, FaCommentAlt } from 'react-icons/fa';
 import jwt from 'jsonwebtoken';
+import UserModal from './userModal';
 
 interface MovieDetails {
   title: string;
@@ -35,6 +36,7 @@ const MovieDetailsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [inWatchlist, setInWatchlist] = useState<boolean>(false);
   const [usersWithMovie, setUsersWithMovie] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (!imdbId || typeof imdbId !== "string") return;
@@ -115,6 +117,14 @@ const MovieDetailsPage: React.FC = () => {
     }
   };
 
+  const handleWatchlistUser = (user: User) => {
+    setSelectedUser(user);
+  };
+
+  const closeModal = () => {
+    setSelectedUser(null);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-black to-blue-900">
@@ -145,6 +155,8 @@ const MovieDetailsPage: React.FC = () => {
           </button>
         </div>
       </header>
+
+      <UserModal user={selectedUser} onClose={closeModal} />
 
       {/* Movie Hero Section */}
       <section className="relative py-20">
@@ -178,13 +190,17 @@ const MovieDetailsPage: React.FC = () => {
                   <div className="flex flex-col space-y-4">
                     {usersWithMovie.length > 0 ? (
                       usersWithMovie.map((user, index) => (
-                        <div key={index} className="flex items-center bg-gray-700 text-yellow-400 py-3 px-3 rounded-full hover:bg-gray-600 transition duration-300">
+                        <button
+                          key={index}
+                          onClick={() => handleWatchlistUser(user)}
+                          className="flex items-center bg-gray-700 text-yellow-400 py-3 px-3 rounded-full hover:bg-gray-600 transition duration-300 w-full text-left"
+                        >
                           <img src={user.profilePicture} alt={`${user.username}'s profile`} className="w-12 h-12 rounded-full mr-4" />
                           <div className="flex flex-row items-center w-full">
                             <span className="text-lg truncate max-w-[25%]">{user.username}</span>
                             <p className="text-gray-300 text-sm truncate ml-4 flex-1 mr-16">{user.biography || "No bio yet!"}</p>
                           </div>
-                        </div>
+                        </button>
                       ))
                     ) : (
                       <div className="text-gray-400">No users in watchlist.</div>
