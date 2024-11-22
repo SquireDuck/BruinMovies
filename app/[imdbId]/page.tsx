@@ -186,7 +186,7 @@ const MovieDetailsPage: React.FC = () => {
             <div className="mt-8 w-full">
               <h3 className="text-3xl font-bold mb-4 text-yellow-400">Watchlist</h3>
               <div className="py-5 px-2 bg-gray-800 shadow-2xl max-h-64 max-w-xl">
-                <div className="bg-gray-800 px-5 py-5 rounded-lg max-h-64 max-w-xl overflow-y-auto scrollbar-hide">
+                <div className="bg-gray-800 px-5 pb-5 rounded-lg max-h-64 max-w-xl overflow-y-auto scrollbar-hide">
                   <div className="flex flex-col space-y-4">
                     {usersWithMovie.length > 0 ? (
                       usersWithMovie.map((user, index) => (
