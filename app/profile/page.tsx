@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+/* Helper functions for the image cropper */
+import { useRef, useCallback } from "react";
+import Cropper from "react-easy-crop";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import { getCroppedImg } from "./cropImageHelper.js";
+
 interface Profile {
     // Username and email
     username: string;
@@ -19,7 +25,7 @@ interface Profile {
 }
 
 const ProfilePage = () => {
-    // State variables
+    /* State variables */
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [profileImagePreview, setProfileImagePreview] = useState<
@@ -38,7 +44,14 @@ const ProfilePage = () => {
         }
     }, [router]);
 
-    // Fetch user profile on page load
+    /* State variables for image cropper */
+    const [selectedFile, setSelectedFile] = useState<string | null>(null);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [showCropper, setShowCropper] = useState<boolean>(false);
+
+    /* Fetch user profile on page load */
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -66,7 +79,7 @@ const ProfilePage = () => {
         fetchProfile();
     }, []);
 
-    // Event handlers
+    /* Event handlers */
     const handleEdit = () => {
         setIsEditing(true);
     };
@@ -88,6 +101,47 @@ const ProfilePage = () => {
             reader.onloadend = () => setPreview(reader.result as string);
             reader.readAsDataURL(file);
         }
+    };
+
+    /* Specifically handles profile picture change -- including cropper */
+    const handleProfilePictureChange = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        setPreview: (preview: string | null) => void,
+    ) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const imageUrl = reader.result as string;
+                setSelectedFile(imageUrl); // Set the selected file state
+                setShowCropper(true); // Show the cropper
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    /* Cropper helper functions */
+    const onCropComplete = async (croppedArea: any, croppedAreaPixels: any) => {
+        try {
+            const croppedImage = await getCroppedImg(
+                selectedFile!,
+                croppedAreaPixels,
+            );
+            setProfileImagePreview(croppedImage); // Save the cropped image
+        } catch (error) {
+            console.error("Error cropping image:", error);
+        }
+    };
+
+    /* Cancels cropping */
+    const handleCropCancel = () => {
+        setShowCropper(false); /* Close cropper */
+        setSelectedFile(null); /* Reset selected file */
+    };
+
+    /* Saves cropping changes */
+    const handleCropSave = () => {
+        setShowCropper(false); /* Close cropper */
     };
 
     const handleSave = async () => {
@@ -123,7 +177,7 @@ const ProfilePage = () => {
                 formData.append("bannerPicture", bannerPictureInput.files[0]);
             }
 
-            // Send PUT request to update profile
+            /* Send PUT request to update profile */
             const response = await fetch("/api/profile", {
                 method: "PUT",
                 headers: { Authorization: `Bearer ${token}` },
@@ -155,7 +209,7 @@ const ProfilePage = () => {
     };
 
     if (!profile)
-        // Loading state
+        /* Loading state */
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex items-center justify-center">
                 <div className="text-xl">Loading...</div>
@@ -391,7 +445,7 @@ const ProfilePage = () => {
                                     type="file"
                                     id="profilePicture"
                                     onChange={(e) =>
-                                        handleImageChange(
+                                        handleProfilePictureChange(
                                             e,
                                             setProfileImagePreview,
                                         )
@@ -399,7 +453,41 @@ const ProfilePage = () => {
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     accept="image/*"
                                 />
-                                {profileImagePreview && (
+                                {/* Cropper */}
+                                {showCropper && (
+                                    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+                                        <div className="relative w-80 h-80 bg-white p-4 rounded shadow-lg z-60">
+                                            <Cropper
+                                                image={selectedFile}
+                                                crop={crop}
+                                                zoom={zoom}
+                                                aspect={1} // 1:1 aspect ratio
+                                                onCropChange={setCrop}
+                                                onZoomChange={setZoom}
+                                                onCropComplete={onCropComplete}
+                                            />
+                                            <div className="absolute top-4 right-4 flex space-x-4">
+                                                {" "}
+                                                {/* Place buttons absolutely within cropper container to ensure that they sit above it */}
+                                                <button
+                                                    onClick={handleCropCancel}
+                                                    className="text-red-500 z-70"
+                                                >
+                                                    <FaTimes size={20} />
+                                                </button>
+                                                <button
+                                                    onClick={handleCropSave}
+                                                    className="text-green-500 z-70"
+                                                >
+                                                    <FaCheck size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Display preview once cropped */}
+                                {!showCropper && profileImagePreview && (
                                     <img
                                         src={profileImagePreview}
                                         alt="Profile Preview"
