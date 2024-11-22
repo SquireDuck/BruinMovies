@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Profile {
+    // Username and email
     username: string;
     email: string;
 
-    // Newly added fields
+    // User profile fields
     year: string;
     major: string;
     genre_interests: string;
@@ -18,6 +19,7 @@ interface Profile {
 }
 
 const ProfilePage = () => {
+    // State variables
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [profileImagePreview, setProfileImagePreview] = useState<
@@ -36,6 +38,7 @@ const ProfilePage = () => {
         }
     }, [router]);
 
+    // Fetch user profile on page load
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -63,6 +66,7 @@ const ProfilePage = () => {
         fetchProfile();
     }, []);
 
+    // Event handlers
     const handleEdit = () => {
         setIsEditing(true);
     };
@@ -99,12 +103,9 @@ const ProfilePage = () => {
 
             formData.append("username", profile.username);
             formData.append("email", profile.email);
-
-            // Newly added fields
             formData.append("year", profile.year);
             formData.append("major", profile.major);
             formData.append("genre_interests", profile.genre_interests);
-
             formData.append("biography", profile.biography);
 
             const profilePictureInput = document.getElementById(
@@ -122,6 +123,7 @@ const ProfilePage = () => {
                 formData.append("bannerPicture", bannerPictureInput.files[0]);
             }
 
+            // Send PUT request to update profile
             const response = await fetch("/api/profile", {
                 method: "PUT",
                 headers: { Authorization: `Bearer ${token}` },
@@ -153,6 +155,7 @@ const ProfilePage = () => {
     };
 
     if (!profile)
+        // Loading state
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex items-center justify-center">
                 <div className="text-xl">Loading...</div>

@@ -55,11 +55,12 @@ export default async function handler(
             }
 
             res.status(200).json({
+                // Username and email
                 username: user.username,
                 email: user.email,
-                biography: user.biography || "",
 
-                // Newly added fields
+                // Profile fields
+                biography: user.biography || "",
                 year: user.year || "",
                 major: user.major || "",
                 genre_interests: user.genre_interests || "",
@@ -84,13 +85,14 @@ export default async function handler(
                 const trimField = (field: string | string[]): string =>
                     Array.isArray(field) ? field[0].trim() : field.trim();
 
+                // Username and email
                 if (fields.username)
                     updateFields.username = trimField(fields.username);
                 if (fields.email) updateFields.email = trimField(fields.email);
+
+                // Profile fields
                 if (fields.biography)
                     updateFields.biography = trimField(fields.biography);
-
-                // Newly added fields
                 if (fields.year) updateFields.year = trimField(fields.year);
                 if (fields.major) updateFields.major = trimField(fields.major);
                 if (fields.genre_interests)
@@ -146,11 +148,10 @@ export default async function handler(
                     username: updatedUser.username,
                     email: updatedUser.email,
 
-                    // Newly added fields
+                    // Profile fields
                     year: updatedUser.year || "",
                     major: updatedUser.major || "",
                     genre_interests: updatedUser.genre_interests || "",
-
                     biography: updatedUser.biography || "",
                     profilePicture: updatedUser.profilePicture || "",
                     bannerPicture: updatedUser.bannerPicture || "",
