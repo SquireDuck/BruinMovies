@@ -34,7 +34,7 @@ const CommentForm = ({movieName, user}:{movieName: string, user: string}) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4">
+    <form onSubmit={handleSubmit} className="mt-4 mb-10">
     <textarea
         value={comment}
         onChange={(e) => setComment(e.target.value)}

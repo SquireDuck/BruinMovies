@@ -102,7 +102,7 @@ const MovieDetailsPage: React.FC = () => {
       {/* Enhanced Header */}
       <header className="relative bg-black py-8">
         <div className="container mx-auto px-6">
-          <button 
+          <button
             onClick={() => router.back()}
             className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition duration-300"
           >
@@ -114,7 +114,7 @@ const MovieDetailsPage: React.FC = () => {
 
       {/* Movie Hero Section */}
       <section className="relative py-20">
-        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{backgroundImage: `url(${movie.image})`}}></div>
+        <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url(${movie.image})` }}></div>
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col md:flex-row items-center">
             <img
@@ -141,7 +141,7 @@ const MovieDetailsPage: React.FC = () => {
       <main className="container mx-auto px-6 py-12">
         <div className="bg-gray-800 p-8 rounded-lg shadow-2xl hover:shadow-yellow-400/20 transition duration-300">
           <h2 className="text-3xl font-bold mb-6 text-yellow-400">About the Movie</h2>
-          
+
           {/* Genres Section */}
           {movie.genres && movie.genres.length > 0 && (
             <div className="mb-6">
@@ -170,8 +170,8 @@ const MovieDetailsPage: React.FC = () => {
             <FaCommentAlt className="mr-4" />
             Student Reviews
           </h3>
-          <DisplayComments movieName={movie.title} user={user} email={email}/>
-          <CommentForm movieName = {movie.title} user={user}/>
+          <CommentForm movieName={movie.title} user={user} />
+          <DisplayComments movieName={movie.title} user={user} email={email} />
         </div>
       </main>
 
