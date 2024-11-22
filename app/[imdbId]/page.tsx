@@ -26,8 +26,10 @@ interface Profile {
   biography: string;
   profilePicture: string;
   bannerPicture: string;
-  watchList: string;
+  watchList: string[];
 }
+
+
 
 
 const MovieDetailsPage = () => {
@@ -40,6 +42,13 @@ const MovieDetailsPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [watching, setWatching] = useState<boolean>(false);
+
+  function watchy(){
+    setWatching(true)
+  }
+  function noWatchy(){
+    setWatching(false)
+  }
 
   useEffect(() => {
     if (!imdbId || typeof imdbId !== "string") return;
@@ -65,7 +74,34 @@ const MovieDetailsPage = () => {
   }, [imdbId]);
 
   useEffect(() => {
-    const fetchProfile2 = async () => {
+    const addWatchList = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            throw new Error("No authentication token found.");
+        }
+
+        const response = await fetch("/api/watchList", {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setProfile(data);
+        } else {
+            throw new Error("Failed to fetch profile");
+        }
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        setError("Failed to load profile. Please try again.");
+    }
+    alert("hello");
+    };
+    addWatchList();
+  }, []);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
         try {
             const token = localStorage.getItem("authToken");
             if (!token) {
@@ -88,8 +124,8 @@ const MovieDetailsPage = () => {
         }
     };
 
-    fetchProfile2();
-}, []);
+    fetchProfile();
+  }, []);
 
   if (loading) {
     return (
@@ -115,28 +151,23 @@ const MovieDetailsPage = () => {
       if (!token) {
           throw new Error("No authentication token found.");
       }
-      setWatching(true);
+      
+
+      if (watching == true) setWatching(false);
+      else setWatching(true);
+
 
       const formData = new FormData();
 
-      formData.append("username", "vik");
-      formData.append("email", profile.email);
+      formData.append("watchingy", movie.title);
 
-      // Newly added fields
-      formData.append("year", profile.year);
-      formData.append("major", profile.major);
-      formData.append("genre_interests", profile.genre_interests);
-
-      formData.append("biography", profile.biography);
-      formData.append("watching", profile.watchList);
-
-
-      const response = await fetch("/api/profile", {
+      alert("watching2");
+      const response = await fetch("/api/watchList", {
           method: "PUT",
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {Authorization: `Bearer ${token}` },
           body: formData,
       });
-
+      
 
       if (response.ok) {
           const updatedProfile = await response.json();
@@ -152,6 +183,8 @@ const MovieDetailsPage = () => {
       setError("Failed to update profile. Please try again.");
   }
   };
+
+  
                   
   return (
     <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
@@ -192,7 +225,7 @@ const MovieDetailsPage = () => {
                 UpdateWatchStatus();
                 }}
                 >
-                Add to watchList
+                {watching == true ? "unsub" : "sub"}
               </button>
             </div>
 
