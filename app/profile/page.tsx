@@ -3,13 +3,24 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+
 interface Profile {
   username: string;
   email: string;
   biography: string;
   profilePicture: string;
   bannerPicture: string;
+  watchlist: string[];
 }
+
+interface Movie {
+  title: string;
+  rating: string;
+  showtimes: string;
+  imdbId: string;
+  image: string;
+}
+
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -17,7 +28,10 @@ const ProfilePage = () => {
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
   const [bannerImagePreview, setBannerImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [movieWatchList, setMovieWatchList] = useState<Movie[] |null>(null);
   const router = useRouter();
+
+
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -35,6 +49,7 @@ const ProfilePage = () => {
         }
 
         const response = await fetch("/api/profile", {
+          method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -50,7 +65,10 @@ const ProfilePage = () => {
       }
     };
 
+    
+
     fetchProfile();
+    
   }, []);
 
   const handleEdit = () => {
@@ -327,6 +345,11 @@ const ProfilePage = () => {
                   Biography
                 </h3>
                 <p className="text-gray-300">{profile.biography}</p>
+              </div>
+              <div>
+                <h3 className="text-xl font-medium text-gray-200 mb-2">
+                  WatchList: </h3>
+                <p className="text-gray-300"> {profile.watchlist} </p>
               </div>
             </div>
           )}

@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             year: user.year || "",
             major: user.major || "",
             genre_interests: user.genre_interests || "",
-            watchList: user.watchList || "",
+            watchlist: user.watchlist || "",
         //new
         profilePicture: user.profilePicture || "",
         bannerPicture: user.bannerPicture || "",

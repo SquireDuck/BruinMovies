@@ -88,6 +88,11 @@ const MoviePage: React.FC = () => {
     }));
   };
 
+  const handleSignOut = () => {
+    localStorage.removeItem("authToken");
+    router.push("/");
+  };
+
 
 
   return (
@@ -123,11 +128,13 @@ const MoviePage: React.FC = () => {
               <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
 
-            <button
-              onClick={() => router.push("/profile")}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
+
+          <div className="px-6 py-4 flex justify-between items-center w-full">
+          <button
+              onClick={handleSignOut}
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded mx-10"
             >
-              Edit Profile
+              Sign Out
             </button>
 
             {profilePicture && (
@@ -138,6 +145,8 @@ const MoviePage: React.FC = () => {
                 onClick={() => router.push("/profile")}
               />
             )}
+          </div>
+            
           </div>
         </div>
       </header>
