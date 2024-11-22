@@ -36,6 +36,11 @@ const MoviePage: React.FC = () => {
   }, [router]);
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+
     const fetchTheaters = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:5000/api/theaters");

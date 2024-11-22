@@ -27,6 +27,11 @@ const ProfilePage = () => {
   }, [router]);
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("authToken");
@@ -138,7 +143,7 @@ const ProfilePage = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans pb-16">
       {/* Header */}
       <nav className="bg-black shadow sticky top-0 z-10 flex flex-row">
         <div className="px-6 py-4 flex justify-between items-center w-full">
@@ -153,13 +158,13 @@ const ProfilePage = () => {
 
             <button
               onClick={handleSignOut}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded mx-10"
+              className="bg-red-500 hover:bg-red-600 text-black font-bold py-2 px-4 rounded mx-10"
             >
               Sign Out
             </button>
             <button
               onClick={() => router.push("/movie-page")}
-              className=" bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
+              className=" bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-5 rounded"
             >
               Go Back
             </button>
