@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { FaStar, FaClock, FaTicketAlt, FaArrowLeft, FaCommentAlt } from 'react-icons/fa';
 import jwt from 'jsonwebtoken';
@@ -32,6 +32,7 @@ const MovieDetailsPage: React.FC = () => {
   const params = useParams() as { imdbId: string };
   const { imdbId } = params;
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [movie, setMovie] = useState<MovieDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,7 +50,16 @@ const MovieDetailsPage: React.FC = () => {
       try {
         const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000/api";
         const response = await axios.get(`${API_URL}/movie/${imdbId}`);
-        setMovie(response.data);
+        //console.log("Movie showtimes:", searchParams?.get('showtimes'));
+        let showtimes = searchParams?.get('showtimes') || "No showtimes available on IMDb.";
+        if (showtimes.startsWith("Get Tickets ")) {
+          showtimes = showtimes.replace("Get Tickets ", "");
+        }
+        const movieData = {
+          ...response.data,
+          showtimes,
+        };
+        setMovie(movieData);
       } catch (err: any) {
         console.error("Error fetching movie details:", err);
         if (axios.isAxiosError(err) && err.response) {

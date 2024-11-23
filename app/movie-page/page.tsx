@@ -206,7 +206,14 @@ const MoviePage: React.FC = () => {
 };
 
 const MovieCard: React.FC<{ movie: Movie }> = ({ movie }) => (
-  <Link href={`/${movie.imdbId}`}>
+  <Link
+    href={{
+      pathname: `/${movie.imdbId}`,
+      query: {
+        showtimes: movie.showtimes,
+      }
+    }}
+  >
     <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
       {movie.image && (
         <div className="relative pb-[150%]">
