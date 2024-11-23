@@ -25,6 +25,7 @@ const MoviePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [selectedTheater, setSelectedTheater] = useState<string>("All Theaters");
 
   const router = useRouter(); // Initialize router for navigation
 
@@ -36,6 +37,11 @@ const MoviePage: React.FC = () => {
   }, [router]);
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      router.push("/");
+    }
+
     const fetchTheaters = async () => {
       try {
         const response = await axios.get("http://127.0.0.1:5000/api/theaters");
@@ -79,16 +85,14 @@ const MoviePage: React.FC = () => {
   }, []);
 
   const filteredMovies = () => {
-    if (!searchQuery) return theaters;
+    if (!searchQuery && selectedTheater === "All Theaters") return theaters;
     return theaters.map((theater) => ({
       ...theater,
       movies: theater.movies.filter((movie) =>
         movie.title.toLowerCase().includes(searchQuery.toLowerCase())
       ),
-    }));
+    })).filter(theater => selectedTheater === "All Theaters" || theater.name === selectedTheater);
   };
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
@@ -104,24 +108,38 @@ const MoviePage: React.FC = () => {
             onClick={() => router.push("/movie-page")}
           />
           <div className="relative flex items-center gap-4">
-            <input
-              type="text"
-              placeholder="Search movies..."
-              className="w-64 px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <svg
-              className="w-6 h-6 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <select
+              className="bg-gray-800 text-white rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              value={selectedTheater}
+              onChange={(e) => setSelectedTheater(e.target.value)}
             >
-              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
+              <option value="All Theaters">All Theaters</option>
+              {theaters.map((theater) => (
+                <option key={theater.name} value={theater.name}>
+                  {theater.name}
+                </option>
+              ))}
+            </select>
+            <div className="relative w-64">
+              <input
+                type="text"
+                placeholder="Search movies..."
+                className="w-full px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <svg
+                className="w-6 h-6 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
 
             <button
               onClick={() => router.push("/profile")}

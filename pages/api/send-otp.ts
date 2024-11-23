@@ -1,4 +1,3 @@
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
@@ -26,14 +25,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   });
 
-  // Send OTP via email
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Your Sign-Up OTP for BruinMovies",
-    text: `Your OTP is: ${newOTP}. It will expire in 10 minutes.`,
-    html: `<p>Your OTP is: <strong>${newOTP}</strong>. It will expire in 10 minutes.</p>`,
-  });
+  try {
+    // Send OTP via email
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your Sign-Up OTP for BruinMovies",
+      text: `Your OTP is: ${newOTP}. It will expire in 10 minutes.`,
+      html: `<p>Your OTP is: <strong>${newOTP}</strong>. It will expire in 10 minutes.</p>`,
+    });
 
-  res.status(200).json({ otp: newOTP, otpExpiry });
+    res.status(200).json({ otp: newOTP, otpExpiry });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Error sending email.' });
+  }
 }
