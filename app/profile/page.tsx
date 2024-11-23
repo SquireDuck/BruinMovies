@@ -458,7 +458,7 @@ const ProfilePage = () => {
                                     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
                                         <div className="relative w-80 h-80 bg-white p-4 rounded shadow-lg z-60">
                                             <Cropper
-                                                image={selectedFile}
+                                                image={selectedFile || undefined}
                                                 crop={crop}
                                                 zoom={zoom}
                                                 aspect={1} // 1:1 aspect ratio
