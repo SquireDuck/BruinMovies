@@ -7,8 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') {
     return res.status(405).end(); // Method Not Allowed
   }
-
-  const { email } = req.body;
+  const email = req.body.email.trim();  
 
   if (!email) {
     return res.status(400).json({ message: 'Email is required.' });
