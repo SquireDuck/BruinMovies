@@ -6,6 +6,8 @@ import axios from "axios";
 import { FaStar, FaClock, FaTicketAlt, FaArrowLeft, FaCommentAlt } from 'react-icons/fa';
 import jwt from 'jsonwebtoken';
 import UserModal from './userModal';
+import CommentForm from "./postcomment";
+import DisplayComments from "./displaycomment";
 
 interface MovieDetails {
   title: string;
@@ -37,6 +39,8 @@ const MovieDetailsPage: React.FC = () => {
   const [inWatchlist, setInWatchlist] = useState<boolean>(false);
   const [usersWithMovie, setUsersWithMovie] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [user, setUser] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
     if (!imdbId || typeof imdbId !== "string") return;
@@ -124,6 +128,37 @@ const MovieDetailsPage: React.FC = () => {
   const closeModal = () => {
     setSelectedUser(null);
   };
+
+  /// This is to fetch username and email for comments
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          throw new Error("No authentication token found.");
+        }
+
+        const response = await fetch("/api/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.username);
+          setEmail(data.email);
+          // console.log("User:", data.username);
+          // console.log("User ID:", data.email);
+        } else {
+          throw new Error("Failed to fetch profile");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setError("Failed to load profile. Please try again.");
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   if (loading) {
     return (
@@ -246,14 +281,8 @@ const MovieDetailsPage: React.FC = () => {
             <FaCommentAlt className="mr-4" />
             Student Reviews
           </h3>
-          <div className="bg-gray-800 p-8 rounded-lg shadow-2xl">
-            {['Great movie!', 'Loved the plot twist!', 'Highly recommend watching with friends.'].map((comment, index) => (
-              <div key={index} className="mb-6 pb-6 border-b border-gray-700 last:border-b-0 last:mb-0 last:pb-0">
-                <p className="text-gray-300 mb-2">{comment}</p>
-                <p className="text-yellow-400 text-sm">Andy Peng</p>
-              </div>
-            ))}
-          </div>
+          <CommentForm movieName={movie.title} user={user} />
+          <DisplayComments movieName={movie.title} user={user} email={email} />
         </div>
       </main >
 
