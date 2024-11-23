@@ -208,6 +208,16 @@ const ProfilePage = () => {
         router.push("/");
     };
 
+    const handleGenreInterestsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+        if (profile) {
+            setProfile({
+                ...profile,
+                genre_interests: selectedOptions.join(", "),
+            });
+        }
+    };
+
     if (!profile)
         /* Loading state */
         return (
@@ -257,11 +267,11 @@ const ProfilePage = () => {
                         <span className="text-gray-300">No Banner Picture</span>
                     </div>
                 )}
-                <div className="absolute left-6 -bottom-12">
+                <div className="absolute left-6 -bottom-12 w-24 h-24">
                     <img
                         src={profile.profilePicture}
                         alt="Profile"
-                        className="w-24 h-24 object-cover rounded-full border-4 bg-slate-300 border-black shadow-lg"
+                        className="w-full h-full object-fit rounded-full border-4 bg-slate-300 border-black shadow-lg"
                     />
                 </div>
                 {!isEditing && (
@@ -376,19 +386,10 @@ const ProfilePage = () => {
                                     Genre Interests
                                 </label>
                                 <select
-                                    value={profile.genre_interests.split(",")}
+                                    value={profile.genre_interests.split(", ")}
                                     multiple
-                                    onChange={(e) => {
-                                        const selectedOptions = Array.from(
-                                            e.target.selectedOptions,
-                                        ).map((option) => option.value);
-                                        setProfile({
-                                            ...profile,
-                                            genre_interests:
-                                                selectedOptions.join(", "),
-                                        });
-                                    }}
-                                    className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    onChange={handleGenreInterestsChange}
+                                    className="w-full px-4 h-40 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="" disabled>
                                         Select your genre interests
