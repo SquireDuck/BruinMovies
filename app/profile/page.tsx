@@ -37,12 +37,12 @@ const ProfilePage = () => {
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      router.push("/");
-    }
-  }, [router]);
+    useEffect(() => {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            router.push("/");
+        }
+    }, [router]);
 
     /* State variables for image cropper */
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -55,7 +55,7 @@ const ProfilePage = () => {
     useEffect(() => {
         const token = localStorage.getItem("authToken");
         if (!token) {
-          router.push("/");
+            router.push("/");
         }
 
         const fetchProfile = async () => {
@@ -82,7 +82,7 @@ const ProfilePage = () => {
         };
 
         fetchProfile();
-    }, []);
+    }, [router]);
 
     /* Event handlers */
     const handleEdit = () => {

@@ -38,6 +38,11 @@ const SignInPage: React.FC = () => {
       return;
     }
 
+    if (username.length > 40 || email.length > 40 || password.length > 40) {
+      setError("Username, email, and password must be 40 characters or less.");
+      return;
+    }
+
     try {
 
       sendOtp(email);
