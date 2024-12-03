@@ -1,15 +1,27 @@
+**Step 1: Install Dependencies**
 
-step 1) install everything
+1. Install Node.js packages:
+   npm install crypto
+   npm install python
+   npm install @types/nodemailer
+   npm install nodemailer mongodb dotenv
+   npm install --save-dev @types/jsonwebtoken
+   npm install --save-dev @types/formidable
 
-npm install crypto
-npm install python
-npm install @types/nodemailer
-npm install nodemailer mongodb dotenv
-npm install --save-dev @types/jsonwebtoken
-npm i --save-dev @types/formidable
-step 2) enter python virtual 
-    (python3 -m venv myenv)
-    source myenv/bin/activate //line and above activates
-    pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
+**Step 2: Set Up Python Virtual Environment**
 
-step 3) run backend
+Note: Steps 2.1 and 2.2 might not be needed depending on your environment setup. This process may differ from what some of your groupmates are doing.
+
+1. Create a virtual environment:
+   python3 -m venv myenv
+2. Activate the virtual environment:
+   source myenv/bin/activate
+3. Install Python dependencies:
+   pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
+
+**Step 3: Run Backend Server**
+
+1. Navigate to the backend directory:
+   cd backend
+2. Run the backend server:
+   python app.py
