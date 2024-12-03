@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import router for redirection
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 interface Movie {
@@ -27,7 +27,7 @@ const MoviePage: React.FC = () => {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [selectedTheater, setSelectedTheater] = useState<string>("All Theaters");
 
-  const router = useRouter(); // Initialize router for navigation
+  const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -95,19 +95,17 @@ const MoviePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
-
+    <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white">
       {/* Header */}
-      <header className="bg-black shadow-lg sticky top-0 z-10 ">
-
-        <div className=" px-6 py-4 flex justify-between items-center w-full">
+      <header className="bg-black/80 backdrop-blur-md shadow-lg sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <img
             src="https://i.postimg.cc/GpkGdwHh/BRUIN-2.png"
             alt="Bruin Logo"
-            className="w-28 h-28 object-contain cursor-pointer"
+            className="w-28 h-28 object-contain cursor-pointer transition-transform duration-300 hover:scale-105"
             onClick={() => router.push("/movie-page")}
           />
-          <div className="relative flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <select
               className="bg-gray-800 text-white rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               value={selectedTheater}
@@ -140,19 +138,17 @@ const MoviePage: React.FC = () => {
                 <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
-
             <button
               onClick={() => router.push("/profile")}
-              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded-full transition duration-300"
             >
               Edit Profile
             </button>
-
             {profilePicture && (
               <img
                 src={profilePicture}
                 alt="Profile"
-                className=" w-20 h-20 rounded-full cursor-pointer right-0"
+                className="w-12 h-12 rounded-full cursor-pointer"
                 onClick={() => router.push("/profile")}
               />
             )}
@@ -196,12 +192,12 @@ const MoviePage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-black py-6 text-center">
+      <footer className="bg-black/80 backdrop-blur-md py-6 text-center">
         <p className="text-gray-400 text-sm">
           &copy; {new Date().getFullYear()} UCLA Movie Explorer. All rights reserved.
         </p>
       </footer>
-    </div>
+      </div>
   );
 };
 
@@ -235,7 +231,7 @@ const MovieCard: React.FC<{ movie: Movie }> = ({ movie }) => (
         <p className="text-gray-400 text-xs truncate">
           <strong>Showtimes:</strong>{" "}
           {movie.showtimes === "No showtimes available on IMDb." ||
-            movie.showtimes === "N/A"
+          movie.showtimes === "N/A"
             ? "No showtimes listed"
             : movie.showtimes}
         </p>
