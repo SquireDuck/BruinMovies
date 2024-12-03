@@ -213,8 +213,12 @@ const ProfilePage = () => {
         router.push("/");
     };
 
-    const handleGenreInterestsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+    const handleGenreInterestsChange = (
+        e: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        const selectedOptions = Array.from(e.target.selectedOptions).map(
+            (option) => option.value,
+        );
         if (profile) {
             setProfile({
                 ...profile,
@@ -318,6 +322,7 @@ const ProfilePage = () => {
                                             username: e.target.value,
                                         })
                                     }
+                                    maxLength={40}
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 />
@@ -336,6 +341,7 @@ const ProfilePage = () => {
                                             email: e.target.value,
                                         })
                                     }
+                                    maxLength={40}
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 />
@@ -381,6 +387,7 @@ const ProfilePage = () => {
                                             major: e.target.value,
                                         })
                                     }
+                                    maxLength={40}
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -437,6 +444,7 @@ const ProfilePage = () => {
                                             biography: e.target.value,
                                         })
                                     }
+                                    maxLength={500}
                                     className="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     rows={4}
                                 />
@@ -464,7 +472,9 @@ const ProfilePage = () => {
                                     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
                                         <div className="relative w-80 h-80 bg-white p-4 rounded shadow-lg z-60">
                                             <Cropper
-                                                image={selectedFile || undefined}
+                                                image={
+                                                    selectedFile || undefined
+                                                }
                                                 crop={crop}
                                                 zoom={zoom}
                                                 aspect={1} // 1:1 aspect ratio

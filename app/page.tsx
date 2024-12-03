@@ -43,6 +43,11 @@ const SignInPage: React.FC = () => {
       return;
     }
 
+    if (!email.endsWith("@ucla.edu") && !email.endsWith("@g.ucla.edu")) {
+      setError("Email must be a UCLA email address.");
+      return;
+    }
+
     try {
 
       sendOtp(email);
