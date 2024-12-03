@@ -228,15 +228,14 @@ const ProfilePage = () => {
     };
 
     if (!profile)
-        /* Loading state */
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white flex items-center justify-center">
                 <div className="text-xl">Loading...</div>
             </div>
         );
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-sans">
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-black to-blue-900 text-white font-sans">
             {/* Header */}
             <nav className="bg-black shadow sticky top-0 z-10 flex flex-row">
                 <div className="px-6 py-4 flex justify-between items-center w-full">
