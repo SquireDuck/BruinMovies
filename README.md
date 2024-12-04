@@ -49,23 +49,23 @@ Note: Steps 2.1 and 2.2 may not be required depending on your environment setup.
 ### 3. Run the Backend Server
 
 1. Navigate to the backend directory:
-```cd backend
-```
+   ```cd backend
+   ```
 2. Start the backend server:
-```python3 ./app.py
-```
+   ```python3 ./app.py
+   ```
 
 ### 4. Run the Development Server
 
 Start the development server using one of the following commands:
-```npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   # or
+   bun dev
+   ```
 
 ### 5. View the Project
 
