@@ -25,7 +25,8 @@ Follow these steps to set up and run the project locally:
 ### 2. Install Dependencies  
 
 1. Install Node.js packages:  
-   ```bash
+   ```
+   bash
    npm install crypto
    npm install python
    npm install @types/nodemailer
@@ -37,28 +38,34 @@ Follow these steps to set up and run the project locally:
 2. Set up a Python virtual environment:
 Note: Steps 2.1 and 2.2 may not be required depending on your environment setup. Check with your groupmates for consistency.
   - Create a virtual environment:
-    ```python3 -m venv myenv
+    ```
+    python3 -m venv myenv
     ```
   - Activate the virtual environment:
-    ```source myenv/bin/activate
+    ```
+    source myenv/bin/activate
     ```
   - Install Python dependencies:
-    ```pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
+    ```
+    pip install flask flask-cors pymongo dnspython email-validator flask-mail python-dotenv beautifulsoup4 requests
     ```
 
 ### 3. Run the Backend Server
 
 1. Navigate to the backend directory:
-   ```cd backend
+   ```
+   cd backend
    ```
 2. Start the backend server:
-   ```python3 ./app.py
+   ```
+   python3 ./app.py
    ```
 
 ### 4. Run the Development Server
 
 Start the development server using one of the following commands:
-   ```npm run dev
+   ```
+   npm run dev
    # or
    yarn dev
    # or
