@@ -1,6 +1,8 @@
-# Project Name  
+# Bruin Movies
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).  
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+Bruin Movie is a social app designed to strengthen student connections through shared movie experiences. The app will allow users to explore a list of films in near-by theaters and connect with other students with similar movie tastes to form watch parties.
 
 ## Getting Started  
 
