@@ -30,6 +30,7 @@ Follow these steps to set up and run the project locally:
    npm install nodemailer mongodb dotenv
    npm install --save-dev @types/jsonwebtoken
    npm install --save-dev @types/formidable
+   ```
 
 2. Set up a Python virtual environment:
 
