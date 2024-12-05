@@ -10,7 +10,7 @@ Follow these steps to set up and run the project locally:
 
 ### 1. Set Up the Backend  
 
-1. Create a backend using MongoDB (or your preferred database).  
+1. Create a backend using MongoDB or your preferred database (to use our backend system, contact us for the details).  
 2. Configure environment variables:  
    - Create a `.env` file in the root directory.  
    - Include the following variables:  
