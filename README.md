@@ -44,6 +44,8 @@ Note: Steps 2.1 and 2.2 may not be required depending on your environment setup.
   - Activate the virtual environment:
     ```
     source myenv/bin/activate
+    // on some computers the path might be different; for example: source myenv/scripts/activate
+    // ls into your myenv directory to check
     ```
   - Install Python dependencies:
     ```
