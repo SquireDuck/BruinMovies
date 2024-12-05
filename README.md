@@ -58,7 +58,7 @@ Note: Steps 2.1 and 2.2 may not be required depending on your environment setup.
    ```
 2. Start the backend server:
    ```
-   python3 ./app.py
+   python ./app.py
    ```
 
 ### 4. Run the Development Server
