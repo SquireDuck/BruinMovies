@@ -80,3 +80,7 @@ Start the development server using one of the following commands:
 ### 5. View the Project
 
 Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to view the website.
+
+Note: This is our first time creating an application like this. While we've taken steps to secure the app, there may be potential security vulnerabilities. Please use it with caution and avoid sharing sensitive personal information.
+
+
